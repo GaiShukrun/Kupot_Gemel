@@ -1,0 +1,29 @@
+/* Navbar.css */
+.navbar {
+    background-color: #007BFF; /* Blue color */
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.navbar-list {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-item {
+    margin: 0 15px;
+}
+
+.navbar-link {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.navbar-link:hover {
+    text-decoration: underline;
+}

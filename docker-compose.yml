@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  frontend:
+    container_name: frontend
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+
+  backend:
+    container_name: backend
+    build: ./MongoDB
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGODB_URI=mongodb+srv://gaish:Gai%210524031660@cluster0.dcr3ai0.mongodb.net/test?retryWrites=true&w=majority
+    restart: always
+
+volumes:
+  mongo-data:
