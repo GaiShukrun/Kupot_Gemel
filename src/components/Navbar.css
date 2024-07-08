@@ -27,3 +27,17 @@
 .navbar-link:hover {
     text-decoration: underline;
 }
+
+/* Style for logout button */
+.navbar-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-size: 18px;
+    padding: 0;
+}
+
+.navbar-item button:hover {
+    text-decoration: underline;
+}
