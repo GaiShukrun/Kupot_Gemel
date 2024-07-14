@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+        NODE_VERSION = '20.11.1'  
     }
 
     stages {
@@ -12,27 +13,38 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
+                    sh 'npm install'
+                }
+            }
+        }
+
         stage('Build') {
+            steps {
+                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
+                    sh 'npm test -- --watchAll=false'
+                }
+            }
+        }
+
+        stage('Docker Build') {
             steps {
                 sh 'docker-compose -f $DOCKER_COMPOSE_FILE build'
             }
         }
 
-        stage('Start Services') {
+        stage('Docker Up') {
             steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE exec -T frontend npm test'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE down'
                 sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
             }
         }
