@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
 
     environment {
         DOCKER_COMPOSE_FILE = 'docker-compose.yml'
@@ -15,7 +10,6 @@ pipeline {
             steps {
                 checkout scm
             }
-            
         }
 
         stage('Build') {
@@ -24,10 +18,15 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Start Services') {
             steps {
                 sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE exec frontend npm test'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE exec -T frontend npm test'
             }
         }
 
@@ -37,16 +36,11 @@ pipeline {
                 sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
             }
         }
-
-        stage('Cleanup') {
-            steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE down'
-            }
-        }
     }
 
     post {
         always {
+            sh 'docker-compose -f $DOCKER_COMPOSE_FILE down'
             cleanWs()
         }
     }
