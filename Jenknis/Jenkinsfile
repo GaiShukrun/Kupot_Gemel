@@ -1,44 +1,53 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    environment {
+        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
+    }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'npm test'
-            }
+            
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE build'
             }
         }
 
-        stage('Docker Build') {
+        stage('Test') {
             steps {
-                script {
-                    docker.build("your-image-name:${env.BUILD_NUMBER}")
-                }
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE exec frontend npm test'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying...'
-                // Add your deployment steps here
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE down'
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
             }
+        }
+
+        stage('Cleanup') {
+            steps {
+                sh 'docker-compose -f $DOCKER_COMPOSE_FILE down'
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
         }
     }
 }
