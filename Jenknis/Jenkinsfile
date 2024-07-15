@@ -2,57 +2,56 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_COMPOSE_FILE = 'docker-compose.yml'
-        NODE_VERSION = '20.11.1'  
+        DOCKER_FRONTEND_IMAGE = "vladfu/test-docker-front"
+        DOCKER_BACKEND_IMAGE = "vladfu/test-docker-back"
+        GIT_URL = "https://github.com/GaiShukrun/Kupot_Gemel.git"  
     }
 
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
-                    sh 'npm install'
-                }
+                git url: "${GIT_URL}", branch: 'main'
             }
         }
 
         stage('Build') {
-            steps {
-                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
-                    sh 'npm run build'
+            parallel {
+                stage('Build Frontend') {
+                    steps {
+                        dir('.') {
+                            sh "docker build -t ${DOCKER_FRONTEND_IMAGE}:${latest} ."
+                        }
+                    }
+                }
+                stage('Build Backend') {
+                    steps {
+                        dir('MongoDB') {
+                            sh "docker build -t ${DOCKER_BACKEND_IMAGE}:${latest} ."
+                        }
+                    }
                 }
             }
         }
 
-        stage('Test') {
+        stage('Tests') {
             steps {
-                nodejs(nodeJSInstallationName: 'NodeJS ' + env.NODE_VERSION) {
-                    sh 'npm test -- --watchAll=false'
+                dir('.') {
+                    sh "docker run --rm ${DOCKER_FRONTEND_IMAGE}:${latest} npm test"
                 }
             }
         }
 
-        stage('Docker Build') {
+        stage('Clean up') {
             steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE build'
-            }
-        }
-
-        stage('Docker Up') {
-            steps {
-                sh 'docker-compose -f $DOCKER_COMPOSE_FILE up -d'
+                sh "docker rmi ${DOCKER_FRONTEND_IMAGE}:${latest}"
+                sh "docker rmi ${DOCKER_BACKEND_IMAGE}:${latest}"
             }
         }
     }
 
     post {
         always {
-            cleanWs()
+            sh 'docker image prune -f'
         }
     }
 }
