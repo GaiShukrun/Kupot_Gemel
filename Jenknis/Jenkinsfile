@@ -4,7 +4,8 @@ pipeline {
     environment {
         DOCKER_FRONTEND_IMAGE = "vladfu/test-docker-front"
         DOCKER_BACKEND_IMAGE = "vladfu/test-docker-back"
-        GIT_URL = "https://github.com/GaiShukrun/Kupot_Gemel.git"  
+        GIT_URL = "https://github.com/GaiShukrun/Kupot_Gemel.git"
+        BUILD_NUMBER = "latest"
     }
 
     stages {
@@ -19,14 +20,14 @@ pipeline {
                 stage('Build Frontend') {
                     steps {
                         dir('.') {
-                            sh "docker build -t ${DOCKER_FRONTEND_IMAGE}:${latest} ."
+                            sh "docker build -t ${DOCKER_FRONTEND_IMAGE}:${BUILD_NUMBER} ."
                         }
                     }
                 }
                 stage('Build Backend') {
                     steps {
                         dir('MongoDB') {
-                            sh "docker build -t ${DOCKER_BACKEND_IMAGE}:${latest} ."
+                            sh "docker build -t ${DOCKER_BACKEND_IMAGE}:${BUILD_NUMBER} ."
                         }
                     }
                 }
@@ -36,15 +37,15 @@ pipeline {
         stage('Tests') {
             steps {
                 dir('.') {
-                    sh "docker run --rm ${DOCKER_FRONTEND_IMAGE}:${latest} npm test"
+                    sh "docker run --rm ${DOCKER_FRONTEND_IMAGE}:${BUILD_NUMBER} npm test"
                 }
             }
         }
 
         stage('Clean up') {
             steps {
-                sh "docker rmi ${DOCKER_FRONTEND_IMAGE}:${latest}"
-                sh "docker rmi ${DOCKER_BACKEND_IMAGE}:${latest}"
+                sh "docker rmi ${DOCKER_FRONTEND_IMAGE}:${BUILD_NUMBER}"
+                sh "docker rmi ${DOCKER_BACKEND_IMAGE}:${BUILD_NUMBER}"
             }
         }
     }
