@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+
 import './Login.css'; // Import your custom CSS for Login page styling
 
 function Login() {
@@ -71,6 +72,7 @@ function Login() {
                     
                     <button type="submit" className="btn-login">Login</button>
                 </form>
+                <Link to="/forgot-password" className="forgot-password-link">Forgot Password?</Link>
             </div>
         </div>
     );
