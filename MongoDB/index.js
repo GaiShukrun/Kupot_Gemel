@@ -1,200 +1,136 @@
-// // index.js (Server Side)
-// const express = require('express');
-// const mysql = require('mysql');
-// const session = require('express-session');
-// require('dotenv').config();
-
-// const app = express();
-// app.use(express.json());
-// app.use(cors());
-
-// // Create a MySQL connection
-// const db = mysql.createConnection({
-//   host: process.env.DB_HOST,
-//   user: process.env.DB_USER,
-//   password: process.env.DB_PASSWORD,
-//   database: process.env.DB_NAME
-// });
-
-// // Connect to MySQL
-// db.connect((err) => {
-//   if (err) {
-//     console.error('Error connecting to MySQL:', err);
-//     return;
-//   }
-//   console.log('Connected to MySQL');
-// });
-
-// // Define the port
-// const port = process.env.PORT || 5000;
-
-// // Use sessions
-// app.use(session({
-//   secret: process.env.SESSION_SECRET,
-//   resave: false,
-//   saveUninitialized: true
-// }));
-
-// // Basic route
-// app.get('/', (req, res) => {
-//   res.send('Hello World!');
-// });
-
-// // Register route
-// app.post('/register', (req, res) => {
-//   const { username, password } = req.body;
-//   const sql = 'INSERT INTO users (username, password) VALUES (?, ?)';
-//   db.query(sql, [username, password], (err, result) => {
-//     if (err) {
-//       console.error('Error inserting user:', err);
-//       res.status(500).send('Error registering user');
-//       return;
-//     }
-//     res.send('User registered');
-//   });
-// });
-
-// // Login route
-// app.post('/login', (req, res) => {
-//   const { username, password } = req.body;
-//   const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
-//   db.query(sql, [username, password], (err, results) => {
-//     if (err) {
-//       console.error('Error fetching user:', err);
-//       res.status(500).send('Error logging in');
-//       return;
-//     }
-//     if (results.length > 0) {
-//       req.session.user = username;
-//       res.send('Login successful');
-//     } else {
-//       res.status(401).send('Invalid credentials');
-//     }
-//   });
-// });
-
-// // Logout route
-// app.post('/logout', (req, res) => {
-//   req.session.destroy((err) => {
-//     if (err) {
-//       res.status(500).send('Error logging out');
-//     } else {
-//       res.send('Logout successful');
-//     }
-//   });
-// });
-
-// // Start server
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`);
-// });
-
 const express = require('express');
 const mongoose = require('mongoose');
-const session = require('express-session');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-
+const cors = require('cors');
 const User = require('./Models/Users');
 
 const app = express();
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
-
-// Session configuration
-const secretKey = 'your_secret_key_here'; // Replace with a securely generated string
-app.use(session({
-  secret: secretKey,
-  resave: false,
-  saveUninitialized: true
-}));
-
-const cors = require('cors');
 app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Error connecting to MongoDB:', err));
-
-
-
-
-// Basic route
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => {
+    console.log('Connected to MongoDB');
+}).catch((error) => {
+    console.error('MongoDB connection error:', error);
 });
 
+// Register endpoint
 app.post('/api/users/register', async (req, res) => {
-  const { username, password } = req.body;
-  try {
-      // Check if the username already exists
-      const existingUser = await User.findOne({ username });
-      if (existingUser) {
-          return res.status(400).json({ message: 'Username already exists' });
-      }
+    const { username, password, firstname, lastname, securityQuestion, securityAnswer } = req.body;
+    try {
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
 
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create a new user
-      const newUser = new User({
-          username,
-          password: hashedPassword
-      });
+        const newUser = new User({
+            username,
+            password: hashedPassword,
+            firstname,
+            lastname,
+            securityQuestion,
+            securityAnswer,
+            role: 'user' // Default to 'user' if role is not provided
+        });
 
-      // Save the user to the database
-      await newUser.save();
+        // Save the user to the database
+        await newUser.save();
 
-      res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-      console.error('Error registering user:', error);
-      res.status(500).json({ message: 'Internal server error' });
-  }
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        console.error('Error registering user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
 });
 
 // Login endpoint
 app.post('/api/users/login', async (req, res) => {
-  const { username, password } = req.body;
+    const { username, password } = req.body;
 
-  try {
-      // Find the user by username
-      const user = await User.findOne({ username });
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
+    try {
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-      // Check if the password matches
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
-          return res.status(401).json({ message: 'Invalid password' });
-      }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Invalid password' });
+        }
 
-      res.status(200).json({ message: 'Login successful' });
-  } catch (error) {
-      console.error('Error logging in:', error);
-      res.status(500).json({ message: 'Internal server error' });
-  }
-});
-
-// Logout route
-app.post('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      res.status(500).send('Error logging out');
-    } else {
-      res.send('Logout successful');
+        // Assuming 'role' is stored in your user schema, include it in the response
+        res.status(200).json({ message: 'Login successful', user: { username: user.username, role: user.role } });
+    } catch (error) {
+        console.error('Error logging in:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
-  });
 });
 
-// Define the port
-const port = process.env.PORT || 5000;
+// Get security question for a user
+app.get('/api/users/security-question/:username', async (req, res) => {
+    try {
+        console.log("1");
+        const user = await User.findOne({ username: req.params.username });
+        if (!user) {
+            console.log(`User not found: ${req.params.username}`);
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.json({ securityQuestion: user.securityQuestion });
+    } catch (error) {
+        console.error('Error occurred while fetching security question:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Verify security answer
+app.post('/api/users/verify-security-answer', async (req, res) => {
+    try {
+        const { username, securityAnswer } = req.body;
+        const user = await User.findOne({ username });
+        if (!user || user.securityAnswer !== securityAnswer) {
+            console.log(`Invalid security answer for user: ${username}`);
+            return res.status(400).json({ message: 'Invalid username or security answer' });
+        }
+        res.json({ message: 'Security answer verified' });
+    } catch (error) {
+        console.error('Error occurred while verifying security answer:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Reset password
+app.post('/api/users/reset-password', async (req, res) => {
+    try {
+        const { username, newPassword } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            console.log(`User not found: ${username}`);
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+        res.json({ message: 'Password reset successfully' });
+    } catch (error) {
+        console.error('Error occurred while resetting password:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Basic route
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 
 // Start server
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
 });

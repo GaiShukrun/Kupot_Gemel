@@ -1,19 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const User = require('../Models/Users');
 
-// Route to register a new user
-router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+const mongoose = require('mongoose');
 
-    try {
-        const newUser = new User({ username, password });
-        await newUser.save();
-        res.status(201).send('User registered');
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error registering user');
-    }
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    firstname: {type:String, require:true},
+    lastname: {type:String, require:true},
+    securityQuestion: {type:String, require:true},
+    securityAnswer: { type:String, require:true},
+    role: { type: String, enum: ['user', 'admin','tech'], default: 'user' }
 });
 
-module.exports = router;
+const User = mongoose.model('User', userSchema);
+
+module.exports = User;
