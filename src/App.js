@@ -1,11 +1,12 @@
-// App.js
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './components/AuthContext';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Register from './components/Register';
-import Home from './components/Home'; 
+import Home from './components/Home';
+import Admin from './components/Admin';
+import PrivateRoute from './components/PrivateRoute'; // Make sure to import PrivateRoute
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
                         <Route path="/" element={<Home />} />
+                        <Route path="/admin" element={<PrivateRoute element={Admin} />} />
                     </Routes>
                 </div>
             </Router>
