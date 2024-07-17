@@ -1,0 +1,75 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.login-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px; /* Adjust this value as needed */
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* This ensures padding doesn't increase width */
+}
+
+.btn-login, .btn-forgot-password, .btn-next, .btn-verify, .btn-reset-password {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-login {
+    background-color: #007BFF;
+    color: #ffffff;
+}
+
+.btn-forgot-password {
+    background-color: #f8f9fa;
+    color: #007BFF;
+    border: 1px solid #007BFF;
+}
+
+.btn-next, .btn-verify, .btn-reset-password {
+    background-color: #28a745;
+    color: #ffffff;
+}
+
+.btn-back {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    background-color: #6c757d; /* A neutral gray color */
+    color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-back:hover {
+    background-color: #5a6268; /* A slightly darker shade for hover effect */
+}
+.btn-login:hover { background-color: #0056b3; }
+.btn-forgot-password:hover { background-color: #007BFF; color: #ffffff; }
+.btn-next:hover, .btn-verify:hover, .btn-reset-password:hover { background-color: #218838; }
