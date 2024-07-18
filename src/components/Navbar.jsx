@@ -1,16 +1,19 @@
-// Navbar.jsx
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
-
 function Navbar() {
   const { isAuthenticated, userRole, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout(); // Calls the logout function from AuthContext
+      await logout();
       alert('Logout successful');
+      navigate('/');
+
+
     } catch (error) {
       console.error('Logout error:', error);
       alert('Logout failed');
@@ -18,7 +21,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="navbar"  data-testid="navbar">
+    <nav className="navbar">
       <ul className="navbar-list">
         <li className="navbar-item">
           <Link to="/" className="navbar-link">Home</Link>
