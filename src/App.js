@@ -6,8 +6,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Admin from './components/Admin';
-import ForgotPassword from './components/ForgotPassword';
-import PrivateRoute from './components/PrivateRoute'; // Make sure to import PrivateRoute
+import PrivateRoute from './components/PrivateRoute'; 
+import AddUser from './components/AddUser';
+
 
 function App() {
     return (
@@ -20,7 +21,7 @@ function App() {
                         <Route path="/register" element={<Register />} />
                         <Route path="/" element={<Home />} />
                         <Route path="/admin" element={<PrivateRoute element={Admin} />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
+                        <Route path="/add-user" element={<PrivateRoute element={AddUser} />} />
                     </Routes>
                 </div>
             </Router>

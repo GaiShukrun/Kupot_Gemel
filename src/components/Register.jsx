@@ -15,7 +15,8 @@ function Register() {
     const[lastname,setLastname] = useState('');
     const[securityQuestion,setSecurityQuestion]=useState('');
     const [securityAnswer, setSecurityAnswer] = useState('');
-
+    const role = 'user';
+    
     const [error, setError] = useState('');
     const navigate = useNavigate();
     
@@ -42,7 +43,7 @@ function Register() {
                 'Content-Type': 'application/json'
             },
 
-            body: JSON.stringify({ username, password, firstname, lastname, securityQuestion, securityAnswer })
+            body: JSON.stringify({ username, password, firstname, lastname, securityQuestion, securityAnswer, role })
         });
         if (response.ok) {
             alert('User registered');

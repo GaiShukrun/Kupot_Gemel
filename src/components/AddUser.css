@@ -1,0 +1,115 @@
+.add-user-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0; /* Light gray background */
+    padding: 20px;
+}
+
+.add-user-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333333; /* Dark text color */
+}
+
+.add-user-container form {
+    background-color: #ffffff; /* White background for the form */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Light shadow */
+    width: 320px; /* Adjust width as needed */
+}
+
+.add-user-container div {
+    margin-bottom: 15px;
+}
+
+.add-user-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555555; /* Medium dark text color */
+}
+
+.add-user-container input[type="text"],
+.add-user-container input[type="email"],
+.add-user-container input[type="password"],
+.add-user-container select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #cccccc; /* Light gray border */
+    border-radius: 4px;
+}
+
+.add-user-container button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Blue color */
+    color: #ffffff; /* White text color */
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.add-user-container button[type="submit"]:hover {
+    background-color: #0056b3; /* Darker shade of blue on hover */
+}
+
+/* Admin.css */
+.admin-container {
+    padding: 20px;
+    position: relative;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.add-user-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.add-user-btn:hover {
+    background-color: #218838;
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th, .user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-table th {
+    background-color: #f2f2f2;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
