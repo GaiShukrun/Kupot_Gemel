@@ -1,22 +1,40 @@
 const mongoose = require('mongoose');
 
-const dataSchema = new mongoose.Schema({
-    fundNum: { type: String, required: true, unique: true },
-    fundName: { type: String, required: true },
-    reportTime: {type:String, require:false},
-    sumreportPeriod: {type:String, require:false},
-    threeyearsAverage: {type:String, require:false},
-    fiveyearsAverage: { type:String, require:false},
-    sharpInterest: { type:String, require:false},
-    ManagementfeesLastYear: { type:String, require:false},
-    deposits: { type:String, require:false},
-    assets: { type:String, require:false},
-    assetsBalance: {type:String, require:false},
-    netAccumulation: {type:String, require:false},
-    liquidityIndex: {type:String, require:false},
+const fundSchema = new mongoose.Schema({
+  fundId: { type: Number, required: false },
+  fundName: { type: String, required: false },
+  fundClassification: { type: String, required: false },
+  controllingCorporation: { type: String, required: false },
+  managingCorporation: { type: String, required: false },
+  reportPeriod: { type: Number, required: false },
+  inceptionDate: { type: Date, required: false },
+  targetPopulation: { type: String, required: false },
+  specialization: { type: String, required: false },
+  subSpecialization: { type: String, required: false },
+  deposits: { type: Number, required: false },
+  withdrawls: { type: Number, required: false },
+  internalTransfers: { type: Number, required: false },
+  netMonthlyDeposits: { type: Number, required: false },
+  totalAssets: { type: Number, required: false },
+  avgAnnualManagementFee: { type: Number, required: false },
+  avgDepositFee: { type: Number, required: false },
+  monthlyYield: { type: Number, required: false },
+  yearToDateYield: { type: Number, required: false },
+  yieldTrailing3Yrs: { type: Number, required: false },
+  yieldTrailing5Yrs: { type: Number, required: false },
+  avgAnnualYieldTrailing3Yrs: { type: Number, required: false },
+  avgAnnualYieldTrailing5Yrs: { type: Number, required: false },
+  standardDeviation: { type: Number, required: false },
+  alpha: { type: Number, required: false },
+  sharpeRatio: { type: Number, required: false },
+  liquidAssetsPercent: { type: Number, required: false },
+  stockMarketExposure: { type: Number, required: false },
+  foreignExposure: { type: Number, required: false },
+  foreignCurrencyExposure: { type: Number, required: false },
+  managingCorporationLegalId: { type: Number, required: false },
+  currentDate: { type: Date, required: false },
 });
 
-const data = mongoose.model('data', dataSchema);
+const Fund = mongoose.model('Fund', fundSchema);
 
-module.exports = data;
-
+module.exports = Fund;
