@@ -8,7 +8,7 @@ import Home from './components/Home';
 import Admin from './components/Admin';
 import PrivateRoute from './components/PrivateRoute'; 
 import AddUser from './components/AddUser';
-
+import Questions_Form from './components/Questions_Form'; // Import the Questions_Form component
 
 function App() {
     return (
@@ -22,6 +22,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/admin" element={<PrivateRoute element={Admin} />} />
                         <Route path="/add-user" element={<PrivateRoute element={AddUser} />} />
+                        <Route path="/questions-form" element={<Questions_Form />} /> {/* Add this route */}
                     </Routes>
                 </div>
             </Router>
