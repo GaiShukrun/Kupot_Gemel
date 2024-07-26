@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-
+const userRoutes = require('./routes/user');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const User = require('./Models/Users');
-
+const Answer = require('./Models/Answer');
 const app = express();
 app.use(express.json());
 
@@ -27,6 +27,64 @@ mongoose.connect(uri, {
 }).catch((error) => {
     console.error('MongoDB connection error:', error);
 });
+
+
+app.use('/api/users', userRoutes);
+
+
+
+///////////////////////////////// Saving user's questions-answers ///////////////////////////////////////
+app.post('/api/users/:answers/:username', async (req, res) => {
+    const { username, answers } = req.body;
+
+    try {
+        const newAnswer = new Answer({ username, answers });
+        await newAnswer.save();
+        res.status(201).json({ message: 'Answers saved successfully' });
+    } catch (error) {
+        console.error('Error saving answers:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////// Updating user's questions-answers ///////////////////////////////////////
+app.put('/api/users/:answers/:username', async (req, res) => {
+  const { username,answers } = req.body;
+  console.log('Received request to update answers:', { username, answers });
+
+  try {
+      const updatedAnswer = await Answer.findOneAndUpdate({ username }, { answers }, { new: true });
+      if (!updatedAnswer) {
+          console.log('No answers found for user to update:', username);
+          return res.status(404).json({ message: 'No answers found for this user' });
+      }
+      res.status(200).json({ message: 'Answers updated successfully' });
+  } catch (error) {
+      console.error('Error updating answers:', error);
+      res.status(500).json({ message: 'Error updating answers', error: error.message });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////// Deleting user's questions-answers ///////////////////////////////////////
+app.delete('/api/users/answers/:username', async (req, res) => {
+  const { username } = req.params;
+  console.log('Received request to delete answers for user:', username);
+
+  try {
+      const deletedAnswer = await Answer.findOneAndDelete({ username });
+      if (!deletedAnswer) {
+          console.log('No answers found for user to delete:', username);
+          return res.status(404).json({ message: 'No answers found for this user' });
+      }
+      res.status(200).json({ message: 'Answers deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting answers:', error);
+      res.status(500).json({ message: 'Error deleting answers', error: error.message });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 ///////////////////////////////// Deleting user from Admin Panel ///////////////////////////////////////
