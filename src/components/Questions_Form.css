@@ -1,0 +1,69 @@
+/* Container styles */
+.questions-form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form item styles */
+.question-item {
+    margin-bottom: 20px;
+}
+
+.question-item label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.question-item select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+}
+
+/* Button styles */
+button.save-button,
+button.update-button {
+    display: inline-block;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.save-button {
+    background-color: #28a745;
+}
+button.update-button{
+    background-color: #ffc107;
+}
+
+button.save-button:hover {
+    background-color: #218838;
+}
+
+button.update-button:hover {
+    background-color: #e0a800;
+}
+
+button.save-button:disabled,
+button.update-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+
