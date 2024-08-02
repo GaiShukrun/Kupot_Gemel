@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const User = require('./Models/Users');
 const Answer = require('./Models/Answer');
+const Fund = require('./Models/Data');
 const app = express();
 app.use(express.json());
 
@@ -30,8 +31,20 @@ mongoose.connect(uri, {
 
 
 app.use('/api/users', userRoutes);
+///////////////////////////////// Fetch all funds ///////////////////////////////////////
+app.get('/api/funds', async (req, res) => {
+  console.log('Received request to fetch all funds');
 
-
+  try {
+    const funds = await Fund.find();
+    console.log(`Found ${funds.length} funds`);
+    res.status(200).json(funds);
+  } catch (error) {
+    console.error('Error fetching funds:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////// Saving user's questions-answers ///////////////////////////////////////
 app.post('/api/users/:answers/:username', async (req, res) => {
