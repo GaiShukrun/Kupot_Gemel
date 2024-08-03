@@ -122,3 +122,110 @@ body {
   background-color: #fff;
   border-color: #dee2e6;
 }
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-container select,
+.search-container input {
+  padding: 10px;
+  margin: 0 5px;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  font-size: 16px;
+}
+
+.search-container input {
+  width: 300px;
+  padding-left: 20px;
+}
+
+.search-container input:focus {
+  outline: none;
+  box-shadow: 0 1px 6px rgba(32,33,36,.28);
+}
+
+.search-container select {
+  background-color: white;
+  cursor: pointer;
+}
+
+.search-container select:focus {
+  outline: none;
+  box-shadow: 0 1px 6px rgba(32,33,36,.28);
+}
+.search-container, .sort-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-container > div, .sort-container > div {
+  display: flex;
+  align-items: center;
+}
+
+.search-container label, .sort-container label {
+  margin-right: 5px;
+}
+
+.search-container input, .sort-container select {
+  padding: 5px;
+}
+.sort-container {
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* This centers the content horizontally */
+}
+
+.sort-container select {
+  width: 200px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #dfe1e5;
+  border-radius: 24px;
+  font-size: 16px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.sort-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.sort-item {
+  display: flex;
+  align-items: center;
+  background-color: #e8f0fe;
+  border: 1px solid #4285f4;
+  border-radius: 20px;
+  padding: 5px 10px;
+  margin: 5px;
+  font-size: 14px;
+}
+
+.sort-item button {
+  background-color: transparent;
+  border: none;
+  color: #d93025;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 10px;
+  padding: 2px 5px;
+  transition: background-color 0.3s;
+}
+
+.sort-item button:hover {
+  background-color: #fce8e6;
+  border-radius: 50%;
+}
