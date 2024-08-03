@@ -225,7 +225,15 @@ body {
   transition: background-color 0.3s;
 }
 
-.sort-item button:hover {
-  background-color: #fce8e6;
-  border-radius: 50%;
+.funds-table tbody tr:nth-child(even) {
+  background-color: #e6f2ff; /* Light blue */
+}
+
+.funds-table tbody tr:nth-child(odd) {
+  background-color: #ffffff; /* White */
+}
+.funds-table tbody tr:hover {
+  background-color: #003366; /* Navy blue */
+  color: white; /* Change text color to white for better contrast */
+  cursor: pointer; /* Change cursor to pointer to indicate clickability */
 }
