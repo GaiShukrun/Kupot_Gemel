@@ -46,6 +46,23 @@ app.get('/api/funds', async (req, res) => {
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+///////////////////////////////// Fetch single funds ///////////////////////////////////////
+
+app.get('/api/funds/:fundName', async (req, res) => {
+  try {
+    const fund = await Fund.findOne({ fundName: req.params.fundName });
+    if (!fund) {
+      return res.status(404).json({ message: 'Fund not found' });
+    }
+    res.json(fund);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 ///////////////////////////////// Saving user's questions-answers ///////////////////////////////////////
 app.post('/api/users/:answers/:username', async (req, res) => {
     const { username, answers } = req.body;
