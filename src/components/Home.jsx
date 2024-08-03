@@ -5,13 +5,16 @@ import Pagination from './Pagination';
 import Tooltip from './Tooltip';
 
 
-
+// *****
 function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [funds, setFunds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [fundsPerPage] = useState(25);
+  const [searchTerms, setSearchTerms] = useState({});
+  const [sortCriteria, setSortCriteria] = useState([]);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -40,49 +43,107 @@ function Home() {
   const handleButtonClick = () => {
     navigate('/questions-form');
   };
+  const handleSearch = (criteria, value) => {
+    setSearchTerms(prev => ({...prev, [criteria]: value}));
+    setCurrentPage(1);
+  };
+  const handleAddSortCriteria = (e) => {
+    const [criteria, order] = e.target.value.split('-');
+    if (criteria && order) {
+      setSortCriteria(prev => [...prev, { criteria, order }]);
+    }
+  };
+
+  
+  const filteredFunds = funds.filter((fund) => {
+    return Object.entries(searchTerms).every(([criteria, term]) => {
+      if (criteria === 'totalAssets' || criteria === 'monthlyYield') {
+        return String(fund[criteria]).includes(term);
+      }
+      return fund[criteria].toLowerCase().includes(term.toLowerCase());
+    });
+  });
+  
+  const sortedFunds = [...filteredFunds].sort((a, b) => {
+    for (let { criteria, order } of sortCriteria) {
+      const aValue = parseFloat(a[criteria]);
+      const bValue = parseFloat(b[criteria]);
+      if (aValue !== bValue) {
+        return order === 'asc' ? aValue - bValue : bValue - aValue;
+      }
+    }
+    return 0;
+  });
 
   // Get current funds
   const indexOfLastFund = currentPage * fundsPerPage;
   const indexOfFirstFund = indexOfLastFund - fundsPerPage;
-  const currentFunds = funds.slice(indexOfFirstFund, indexOfLastFund);
-
+  //const currentFunds = funds.slice(indexOfFirstFund, indexOfLastFund);
+  const currentFunds = sortedFunds.slice(indexOfFirstFund, indexOfLastFund);
+  
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     //<div dir="rtl"></div>
-    <div >
-  
-      
-      {user ? (
-        <button className="questions-form-button" onClick={handleButtonClick}>
-          Questions Form
-        </button>
-      ) : (
-        <p>Please log in to access the questionnaire.</p>
-      )}
+    <div>
+        <h2> </h2>
+        <div className="search-container">
+          {[
+            { key: 'fundName', label: 'Fund Name' },
+            { key: 'fundClassification', label: 'Classification' },
+            { key: 'controllingCorporation', label: 'Controlling Corporation' }
+          ].map(({ key, label }) => (
+            <div key={key} className="search-item">
+              <label>{label}:</label>
+              <input
+                type="text"
+                placeholder={`Search ${label}...`}
+                value={searchTerms[key] || ''}
+                onChange={(e) => handleSearch(key, e.target.value)}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="sort-container">
+        <select onChange={handleAddSortCriteria}>
+          <option value="">Add Sort Criteria</option>
+          <option value="totalAssets-asc">Total Assets (Ascending)</option>
+          <option value="totalAssets-desc">Total Assets (Descending)</option>
+          <option value="monthlyYield-asc">Monthly Yield (Ascending)</option>
+          <option value="monthlyYield-desc">Monthly Yield (Descending)</option>
+        </select>
+        <div className="sort-items">
+          {sortCriteria.map(({ criteria, order }, index) => (
+            <div key={index} className="sort-item">
+               <span>{criteria === 'totalAssets' ? 'Total Assets' : 'Monthly Yield'} - {order === 'asc' ? 'Ascending' : 'Descending'}</span>
+               <button onClick={() => setSortCriteria(prev => prev.filter((_, i) => i !== index))}>×</button>
+            </div>
+          ))}
+          </div>
+        </div>
 
-      <h2>Available Funds</h2>
-      <div className="funds-table-container" >
+      <div className="funds-table-container">
         <table className="funds-table">
           <thead>
             <tr>
               <th>Fund Name</th>
-              <th >
+              <th>
                 Classification
-                <Tooltip text="The category or type of the fund" /> </th>
+                <Tooltip text="The category or type of the fund" />
+              </th>
               <th>
                 Controlling Corporation
                 <Tooltip text="The company that controls or manages the fund" />
-                </th>
+              </th>
               <th>
                 Total Assets
                 <Tooltip text="The total value of assets managed by the fund" />
-                </th>
+              </th>
               <th>
                 Monthly Yield
                 <Tooltip text="The percentage return of the fund over the last month" />
-                </th>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -99,10 +160,10 @@ function Home() {
         </table>
       </div>
       <Pagination
-        fundsPerPage={fundsPerPage}
-        totalFunds={funds.length}
-        paginate={paginate}
-        currentPage={currentPage}
+         fundsPerPage={fundsPerPage}
+         totalFunds={sortedFunds.length}
+         paginate={paginate}
+         currentPage={currentPage}
       />
     </div>
   );
