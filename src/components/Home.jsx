@@ -40,8 +40,8 @@ function Home() {
     }
   };
 
-  const handleButtonClick = () => {
-    navigate('/questions-form');
+  const handleFundClick = (fundName) => {
+    navigate(`/analytics/${encodeURIComponent(fundName)}`);
   };
   const handleSearch = (criteria, value) => {
     setSearchTerms(prev => ({...prev, [criteria]: value}));
@@ -148,7 +148,7 @@ function Home() {
           </thead>
           <tbody>
             {currentFunds.map((fund) => (
-              <tr key={fund._id}>
+                <tr key={fund._id} onClick={() => handleFundClick(fund.fundName)}>
                 <td>{fund.fundName}</td>
                 <td>{fund.fundClassification}</td>
                 <td>{fund.controllingCorporation}</td>
