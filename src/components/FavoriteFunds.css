@@ -2,12 +2,12 @@
 
 .favorite-funds {
     max-width: 800px;
+    text-align: center;
     margin: 0 auto;
     padding: 20px;
   }
   
   .favorite-funds h2 {
-    text-align: center;
     color: #333;
     margin-bottom: 20px;
   }

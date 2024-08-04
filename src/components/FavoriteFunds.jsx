@@ -58,10 +58,12 @@ function FavoriteFunds() {
       console.error('Error removing fund from favorites:', error);
     }
   };
+  
   return (
     <div className="favorite-funds">
       <h2>My Favorite Funds</h2>
-      <table>
+      {favoriteFunds.length > 0 ? (
+        <table>
         <thead>
           <tr>
             <th>Fund Name</th>
@@ -88,6 +90,11 @@ function FavoriteFunds() {
           ))}
         </tbody>
       </table>
+      ): (
+        <h3>No favorites fund found!. <a href="/">click here</a> to see all funds</h3>
+      )
+    }
+      
     </div>
   );
 }

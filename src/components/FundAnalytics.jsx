@@ -109,6 +109,7 @@ function FundAnalytics() {
               dataKey="date" 
               type="category" 
               tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              reversed={true}
             />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
@@ -142,6 +143,7 @@ function FundAnalytics() {
               dataKey="date" 
               type="category" 
               tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              reversed={true}
             />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
@@ -200,6 +202,7 @@ function FundAnalytics() {
               dataKey="date" 
               type="category" 
               tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              reversed={true}
             />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />
@@ -230,6 +233,7 @@ function FundAnalytics() {
               dataKey="date" 
               type="category" 
               tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              reversed={true}
             />
             <YAxis />
             <CartesianGrid strokeDasharray="3 3" />

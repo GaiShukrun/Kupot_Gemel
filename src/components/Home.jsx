@@ -190,16 +190,32 @@ function Home() {
                 Monthly Yield
                 <Tooltip text="The percentage return of the fund over the last month" />
               </th>
+              <th>
+                Report Period
+              </th>
+              {/* <th>
+                Add to Favorite
+              </th> */}
             </tr>
           </thead>
           <tbody>
             {currentFunds.map((fund) => (
                 <tr key={fund._id} onClick={() => handleFundClick(fund.fundName)}>
-                <td>{fund.fundName}</td>
+                <td>{fund.fundName}  </td>
                 <td>{fund.fundClassification}</td>
                 <td>{fund.controllingCorporation}</td>
                 <td>{fund.totalAssets}</td>
                 <td>{fund.monthlyYield}%</td>
+                <td>
+                  {(() => {
+                    const period = fund.reportPeriod.toString();
+                    const year = period.slice(0, 4);
+                    const month = period.slice(4, 6);
+                    return `${month}/${year}`;
+                  })()}
+                </td>
+                {/* <td><button>Add to favorites</button></td> */}
+
               </tr>
             ))}
           </tbody>
