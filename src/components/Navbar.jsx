@@ -49,6 +49,9 @@ function Navbar() {
               <Link to="/questions-form" className="navbar-link">Personal Questions</Link>
             </li>
             <li className="navbar-item">
+              <Link to="/recommended-funds" className="navbar-link">My Recommended Funds</Link>
+            </li>
+            <li className="navbar-item">
               <button className="navbar-link" onClick={handleLogout}>Logout</button>
             </li>
           </>
