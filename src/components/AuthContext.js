@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
     const [userRole, setUserRole] = useState(null);
     const [userFirstName, setUserFirstName] = useState(null);
     const [userLastName, setUserLastName] = useState(null);
-    //const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(null);
 
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const AuthProvider = ({ children }) => {
                 setUserRole(payload.role);
                 setUserFirstName(payload.firstname);
                 setUserLastName(payload.lastname);
-                //setUserId(payload.userId); // Add this line to set the userId
+                setUserId(payload.userId); // Add this line to set the userId
 
             } catch (error) {
                 console.error('Error parsing token:', error);
@@ -37,7 +37,7 @@ const AuthProvider = ({ children }) => {
         setUserRole(role);
         setUserFirstName(firstName);
         setUserLastName(lastName);
-        //setUserId(null); // Set the userId when logging in
+        setUserId(null); // Set the userId when logging in
 
     };
 
@@ -47,22 +47,16 @@ const AuthProvider = ({ children }) => {
         setUserRole(null);
         setUserFirstName(null);
         setUserLastName(null);
+        setUserId(null);
     };
 
+
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userRole, userFirstName, userLastName, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, userRole,userId,userFirstName, userLastName, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
-    
 
-
-    // return (
-    //     setUserId(null); // Clear the userId when logging out
-    //     <AuthContext.Provider value={{ isAuthenticated, userRole,userId, login, logout }}>
-    //         {children}
-    //     </AuthContext.Provider>
-    // );
 };
 
 export { AuthContext, AuthProvider };

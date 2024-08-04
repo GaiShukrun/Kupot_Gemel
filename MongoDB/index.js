@@ -63,6 +63,7 @@ app.post('/api/users/:userId/remove-favorite', authenticateToken, async (req, re
     res.status(500).json({ message: 'Error removing fund from favorites', error: error.message });
   }
 });
+
 app.get('/api/users/:userId/favorite-funds', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate('favoriteFunds');
@@ -105,6 +106,7 @@ app.post('/api/users/addFavorite', authenticateToken, async (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+
 ///////////////////////////////// Fetch all funds ///////////////////////////////////////
 app.get('/api/funds', async (req, res) => {
   console.log('Received request to fetch all funds');
