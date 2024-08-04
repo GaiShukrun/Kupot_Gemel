@@ -37,6 +37,9 @@ function Navbar() {
           </>
         ) : (
           <>
+           <li className="navbar-item">
+              <Link to="/favorite-funds" className="navbar-link">My Favorite Funds</Link>
+            </li>
             {userRole === 'admin' && (
               <li className="navbar-item">
                 <Link to="/admin" className="navbar-link">User Management</Link>
