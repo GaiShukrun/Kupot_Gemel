@@ -3,14 +3,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import Login from './Login';
+import { act } from 'react-dom/test-utils';
 
 // Mock fetch globally
 global.fetch = jest.fn();
 
+// Mock window.alert
+global.alert = jest.fn();
+
 // Mock useNavigate
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
 }));
 
 const mockLogin = jest.fn();
@@ -30,6 +35,8 @@ describe('Login Component', () => {
   beforeEach(() => {
     fetch.mockClear();
     mockLogin.mockClear();
+    mockNavigate.mockClear();
+    global.alert.mockClear();
   });
 
   test('renders login form', () => {
@@ -52,16 +59,20 @@ describe('Login Component', () => {
   });
 
   test('submits the form and logs in successfully', async () => {
+    const fakeUserId = 'fake-user-id';
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user' } }),
+      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user', userId: fakeUserId } }),
     });
 
     renderWithRouter(<Login />);
     
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
-    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    });
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
@@ -71,13 +82,16 @@ describe('Login Component', () => {
           body: JSON.stringify({ username: 'test@example.com', password: 'password123' }),
         })
       );
-      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user');
+      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user', fakeUserId);
+      expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
 
-  test('shows forgot password form when "Forgot Password?" is clicked', () => {
+  test('shows forgot password form when "Forgot Password?" is clicked', async () => {
     renderWithRouter(<Login />);
-    fireEvent.click(screen.getByText(/forgot password/i));
+    await act(async () => {
+      fireEvent.click(screen.getByText(/forgot password/i));
+    });
     expect(screen.getByText(/reset password/i)).toBeInTheDocument();
   });
 
@@ -95,11 +109,16 @@ describe('Login Component', () => {
       });
 
     renderWithRouter(<Login />);
-    fireEvent.click(screen.getByText(/forgot password/i));
+    
+    await act(async () => {
+      fireEvent.click(screen.getByText(/forgot password/i));
+    });
 
     // Step 1: Enter username
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'test@example.com' } });
-    fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /next/i }));
+    });
 
     await waitFor(() => {
       expect(screen.getByText(/what is your favorite color/i)).toBeInTheDocument();
@@ -107,7 +126,9 @@ describe('Login Component', () => {
 
     // Step 2: Answer security question
     fireEvent.change(screen.getByLabelText(/security answer/i), { target: { value: 'Blue' } });
-    fireEvent.click(screen.getByRole('button', { name: /verify/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /verify/i }));
+    });
 
     await waitFor(() => {
       expect(screen.getByLabelText(/new password/i)).toBeInTheDocument();
@@ -115,10 +136,13 @@ describe('Login Component', () => {
 
     // Step 3: Set new password
     fireEvent.change(screen.getByLabelText(/new password/i), { target: { value: 'newpassword123' } });
-    fireEvent.click(screen.getByRole('button', { name: /reset password/i }));
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: /reset password/i }));
+    });
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledTimes(3);
+      expect(global.alert).toHaveBeenCalledWith('Password reset successful. Please login with your new password.');
     });
   });
 });
