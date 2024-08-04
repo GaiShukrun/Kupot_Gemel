@@ -13,7 +13,6 @@ app.use(express.json());
 
 const cors = require('cors');
 app.use(cors());
-
 const jwt = require('jsonwebtoken');
 
 
@@ -29,6 +28,82 @@ mongoose.connect(uri, {
     console.error('MongoDB connection error:', error);
 });
 
+
+
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+
+app.post('/api/users/:userId/remove-favorite', authenticateToken, async (req, res) => {
+  const { fundId } = req.body;
+  const userId = req.params.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Remove the fund from the user's favoriteFunds array
+    user.favoriteFunds = user.favoriteFunds.filter(fund => fund.fundId !== fundId);
+    await user.save();
+    
+    res.status(200).json({ message: 'Fund removed from favorites successfully' });
+  } catch (error) {
+    console.error('Error removing fund from favorites:', error);
+    res.status(500).json({ message: 'Error removing fund from favorites', error: error.message });
+  }
+});
+app.get('/api/users/:userId/favorite-funds', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId).populate('favoriteFunds');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user.favoriteFunds);
+  } catch (error) {
+    console.error('Error fetching favorite funds:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+app.post('/api/users/addFavorite', authenticateToken, async (req, res) => {
+  const { fund } = req.body;
+  const userId = req.user.userId;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    // Check if the fund already exists in the user's favorites
+    const fundExists = user.favoriteFunds.some(favFund => favFund.fundName === fund.fundName);
+    
+    if (fundExists) {
+      return res.status(400).json({ message: 'Fund already exists in favorites' });
+    }
+    
+    // Add the favorite fund to the user's favoriteFunds array
+    user.favoriteFunds.push(fund);
+    await user.save();
+    
+    res.status(200).json({ message: 'Fund added to favorites successfully' });
+  } catch (error) {
+    console.error('Error adding fund to favorites:', error);
+    res.status(500).json({ message: 'Error adding fund to favorites', error: error.message });
+  }
+});
 
 app.use('/api/users', userRoutes);
 ///////////////////////////////// Fetch all funds ///////////////////////////////////////
@@ -51,12 +126,13 @@ app.get('/api/funds', async (req, res) => {
 
 app.get('/api/funds/:fundName', async (req, res) => {
   try {
-    const fund = await Fund.findOne({ fundName: req.params.fundName });
-    if (!fund) {
+    const funds = await Fund.find({ fundName: req.params.fundName }).sort({ reportPeriod: 1 });
+    if (funds.length === 0) {
       return res.status(404).json({ message: 'Fund not found' });
     }
-    res.json(fund);
+    res.json(funds);
   } catch (error) {
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -200,8 +276,11 @@ app.post('/api/users/reset-password', async (req, res) => {
 
 
 ////////////////////////////////////// Register //////////////////////////////////////
-app.post('/api/users/register', async (req, res) => {
+app.post('/api/user/register', async (req, res) => {
+
   const { username, password, firstname, lastname, securityQuestion, securityAnswer , role } = req.body;
+  console.log('Registration route hit');
+
   try {
       const existingUser = await User.findOne({ username });
       if (existingUser) {
@@ -209,7 +288,7 @@ app.post('/api/users/register', async (req, res) => {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-
+      console.log("before hasing: "+password + "after hasing: " + hashedPassword   );
       const newUser = new User({
           username,
           password: hashedPassword,
@@ -217,7 +296,8 @@ app.post('/api/users/register', async (req, res) => {
           lastname,
           securityQuestion,
           securityAnswer,
-          role: role 
+          role: role ,
+          favoriteFunds: []
       });
 
         // Save the user to the database
@@ -228,6 +308,7 @@ app.post('/api/users/register', async (req, res) => {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
+  
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -236,19 +317,20 @@ app.post('/api/users/register', async (req, res) => {
 /////////////////////////////////////// Login /////////////////////////////////////////////////
 app.post('/api/users/login', async (req, res) => {
   const { username, password } = req.body;
+  console.log('Login route hit');
 
   try {
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
+    console.log("Input Password " +password + " DataBase Password " +user.password);
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    // Generate a JWT token
+    
     const token = jwt.sign(
       { userId: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET, // Make sure to set this in your .env file
