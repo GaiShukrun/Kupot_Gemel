@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext  } from 'react';
 import { useParams } from 'react-router-dom';
 import {ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import './FundAnalytics.css';
+import CustomTooltip from './Tooltip';  
+import { AuthContext } from './AuthContext'; 
 
 function FundAnalytics() {
+
   const { fundName } = useParams();
   const [fundData, setFundData] = useState([]);
   const [latestFund, setLatestFund] = useState(null);
+  const { isAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchFundData = async () => {
@@ -28,21 +32,55 @@ function FundAnalytics() {
     fetchFundData();
   }, [fundName]);
 
+  const addToFavorites = async () => {
+    if (!isAuthenticated) {
+      alert('Please log in to add favorites');
+      return;
+    }
+
+    const fundToAdd = {
+      fundId: latestFund.fundId,
+      fundName: latestFund.fundName,
+      fundClassification: latestFund.fundClassification,
+      controllingCorporation: latestFund.controllingCorporation,
+      totalAssets: latestFund.totalAssets,
+      inceptionDate: latestFund.inceptionDate,
+      targetPopulation: latestFund.targetPopulation,
+      specialization: latestFund.specialization,
+      subSpecialization: latestFund.subSpecialization,
+      avgAnnualManagementFee: latestFund.avgAnnualManagementFee,
+      avgDepositFee: latestFund.avgDepositFee,
+      standardDeviation: latestFund.standardDeviation,
+      alpha: latestFund.alpha,
+      sharpeRatio: latestFund.sharpeRatio,
+      historicalData: fundData
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/api/users/addFavorite', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ fund: fundToAdd })
+      });
+
+      if (response.ok) {
+        alert('Fund added to favorites!');
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to add fund to favorites: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+      alert('An error occurred while adding to favorites');
+    }
+  };
+
   if (!latestFund) return <div>Loading...</div>;
 
-  const yieldData = [
-    { name: 'Monthly', value: latestFund.monthlyYield },
-    { name: 'YTD', value: latestFund.yearToDateYield },
-    { name: '3 Years', value: latestFund.yieldTrailing3Yrs },
-    { name: '5 Years', value: latestFund.yieldTrailing5Yrs },
-  ];
-  
-  const exposureData = [
-    { name: 'Liquid Assets', value: latestFund.liquidAssetsPercent },
-    { name: 'Stock Market', value: latestFund.stockMarketExposure },
-    { name: 'Foreign', value: latestFund.foreignExposure },
-    { name: 'Foreign Currency', value: latestFund.foreignCurrencyExposure },
-  ];
+
 
   const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
@@ -61,7 +99,10 @@ function FundAnalytics() {
   
     return (
       <div className="chart-wrapper">
-        <h2>Historical Yield</h2>
+        <h2>
+          Historical Yield
+          <CustomTooltip text="This chart presents the historical monthly and year-to-date yields of the fund." />
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <XAxis 
@@ -91,7 +132,10 @@ function FundAnalytics() {
   
     return (
       <div className="chart-wrapper">
-        <h2>Total Assets Over Time</h2>
+       <h2>
+          Total Assets Over Time
+          <CustomTooltip text="This chart shows how the total assets managed by the fund have changed over time." />
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <XAxis 
@@ -146,7 +190,10 @@ function FundAnalytics() {
     
     return (
       <div className="chart-wrapper">
-        <h2>Yield Performance</h2>
+         <h2>
+          Yield Performance
+          <CustomTooltip text="This chart shows the fund's yield performance over time." />
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <XAxis 
@@ -173,7 +220,10 @@ function FundAnalytics() {
     
     return (
       <div className="chart-wrapper">
-        <h2>Fund Exposures</h2>
+        <h2>
+          Fund Exposures
+          <CustomTooltip text="This chart displays the fund's exposure to different asset classes over time." />
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData}>
             <XAxis 
@@ -201,7 +251,10 @@ function FundAnalytics() {
     
     return (
       <div className="chart-wrapper">
-        <h2>Asset Allocation</h2>
+        <h2>
+          Asset Allocation
+          <CustomTooltip text="This pie chart shows the current allocation of the fund's assets." />
+        </h2>
         <ResponsiveContainer width="100%" height={300}>
           <PieChart>
             <Pie
@@ -230,28 +283,21 @@ function FundAnalytics() {
     );
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
   return (
     <div className="fund-analytics">
       <div className="fund-header">
-        <h1>{latestFund.fundName}</h1>
+        <h1>{latestFund?.fundName}
+        <span 
+            onClick={addToFavorites} 
+            style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '1.2em' }}
+            role="img" 
+            aria-label="Add to favorites"
+          >
+            ⭐
+          </span>
+        </h1>
         <div className="fund-details">
           <div className="detail-item">
             <span className="detail-label">Classification:</span>
