@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
-const userRoutes = require('./routes/user');
+const userRoutes = require('./routes/api2');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-
+const { getBestFunds } = require('./Services/fundRecommendation'); 
 const User = require('./Models/Users');
 const Answer = require('./Models/Answer');
 const app = express();
@@ -28,23 +28,90 @@ mongoose.connect(uri, {
     console.error('MongoDB connection error:', error);
 });
 
-
 app.use('/api/users', userRoutes);
 
 
 
+
+
+
+//////////////////////////// Get the top 3 recommended funds /////////////////////////////////
+
+async function getUserAnswers(username) {
+  const answers = await Answer.findOne({ username });
+  if (!answers) {
+    return null;
+  }
+  return answers.answers; 
+}
+
+app.get('/api/users/recommend-funds/:username', async (req, res) => {
+  try {
+    const {username} = req.params;
+    const userAnswers = await getUserAnswers(username);
+    //console.log("@@@@@@@@",userAnswers,"@@@@@@@@");
+    const bestFunds = await getBestFunds(userAnswers);
+    //console.log("########",bestFunds,"########");
+
+    res.json(bestFunds);
+  } catch (error) {
+    console.error('Error recommending funds:', error);
+    res.status(500).json({ message: 'Error recommending funds' });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////// Did the user answered the questions? ///////////////////////////////////////
+app.get('/api/users/isAnswered/:username', async (req, res) => {
+  try {
+    const username = req.params.username;
+    const result = await Answer.find({username});
+    res.json(result.length > 0);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////// Get user answers ////////////////////////
+app.get('/api/users/get-answers/:username', async (req, res) => {
+  const { username } = req.params;
+  console.log('Received request to get answers for user:', username);
+
+  try {
+      const answers = await Answer.findOne({ username });
+      if (!answers) {
+          console.log('No answers found for user:', username);
+          return res.status(404).json({ message: 'No answers found for this user' });
+      }
+      res.status(200).json(answers);
+  } catch (error) {
+      console.error('Error fetching answers:', error);
+      res.status(500).json({ message: 'Error fetching answers', error: error.message });
+  }
+});
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 ///////////////////////////////// Saving user's questions-answers ///////////////////////////////////////
 app.post('/api/users/:answers/:username', async (req, res) => {
-    const { username, answers } = req.body;
+  console.log("@@@@@@@ USING INDEX.JS @@@@@@@");  
+  const { username, answers } = req.body;
 
-    try {
-        const newAnswer = new Answer({ username, answers });
-        await newAnswer.save();
-        res.status(201).json({ message: 'Answers saved successfully' });
-    } catch (error) {
-        console.error('Error saving answers:', error);
-        res.status(500).json({ message: 'Internal server error' });
+  try {
+    const existingAnswer = await Answer.findOne({ username });
+    if (existingAnswer) {
+      console.log('Answers already submitted for this user:', username);
+      return res.status(400).json({ message: 'Answers already submitted' });
     }
+
+    const newAnswer = new Answer({ username, answers });
+    await newAnswer.save();
+    res.status(201).json({ message: 'Answers saved successfully' });
+  } catch (error) {
+    console.error('Error saving answers:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -220,7 +287,7 @@ app.post('/api/users/login', async (req, res) => {
 
     // Generate a JWT token
     const token = jwt.sign(
-      { userId: user._id, username: user.username, role: user.role },
+      { userId: user._id, username: user.username, role: user.role , firstname: user.firstname, lastname: user.lastname },
       process.env.JWT_SECRET, // Make sure to set this in your .env file
       { expiresIn: '1h' } // Token expires in 1 hour
     );
