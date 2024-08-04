@@ -12,7 +12,7 @@ function Navbar() {
       await logout();
       alert('Logout successful');
       navigate('/');
-
+      navigate(0); // refresh
 
     } catch (error) {
       console.error('Logout error:', error);
@@ -37,11 +37,17 @@ function Navbar() {
           </>
         ) : (
           <>
+           <li className="navbar-item">
+              <Link to="/favorite-funds" className="navbar-link">My Favorite Funds</Link>
+            </li>
             {userRole === 'admin' && (
               <li className="navbar-item">
                 <Link to="/admin" className="navbar-link">User Management</Link>
               </li>
             )}
+            <li className="navbar-item">
+              <Link to="/questions-form" className="navbar-link">Personal Questions</Link>
+            </li>
             <li className="navbar-item">
               <button className="navbar-link" onClick={handleLogout}>Logout</button>
             </li>
