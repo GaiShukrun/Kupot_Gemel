@@ -5,6 +5,9 @@ const AuthContext = createContext();
 const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null);
+    const [userFirstName, setUserFirstName] = useState(null);
+    const [userLastName, setUserLastName] = useState(null);
+
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -14,7 +17,10 @@ const AuthProvider = ({ children }) => {
                 // For now, we'll just set the authenticated state
                 setIsAuthenticated(true);
                 const payload = JSON.parse(atob(token.split('.')[1]));
+                console.log("@@@@",payload);
                 setUserRole(payload.role);
+                setUserFirstName(payload.firstname);
+                setUserLastName(payload.lastname);
             } catch (error) {
                 console.error('Error parsing token:', error);
                 logout(); // Clear authentication if token parsing fails
@@ -22,20 +28,24 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (token, role) => {
+    const login = (token, role, firstName, lastName) => {
         localStorage.setItem('token', token);
         setIsAuthenticated(true);
         setUserRole(role);
+        setUserFirstName(firstName);
+        setUserLastName(lastName);
     };
 
     const logout = () => {
         localStorage.removeItem('token');
         setIsAuthenticated(false);
         setUserRole(null);
+        setUserFirstName(null);
+        setUserLastName(null);
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, userRole, userFirstName, userLastName, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
