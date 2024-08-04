@@ -10,6 +10,8 @@ import PrivateRoute from './components/PrivateRoute';
 import AddUser from './components/AddUser';
 import Questions_Form from './components/Questions_Form';
 import FundAnalytics from './components/FundAnalytics';
+import FavoriteFunds from './components/FavoriteFunds';
+
 
 function App() {
     return (
@@ -25,6 +27,8 @@ function App() {
                         <Route path="/add-user" element={<PrivateRoute element={AddUser} />} />
                         <Route path="/analytics/:fundName" element={<FundAnalytics />} />
                         <Route path="/questions-form" element={<Questions_Form />} />
+                        <Route path="/favorite-funds" element={<PrivateRoute element={FavoriteFunds} />} />
+
                     </Routes>
                 </div>
             </Router>
