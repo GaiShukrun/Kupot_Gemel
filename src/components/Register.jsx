@@ -36,8 +36,9 @@ function Register() {
             return;
         }
 
-        setError('');
-        const response = await fetch('http://localhost:5000/api/users/register', {
+        //setError('');
+        console.log("before sending to the server");
+        const response = await fetch('http://localhost:5000/api/user/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

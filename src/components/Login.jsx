@@ -28,7 +28,7 @@ function Login() {
 
             if (response.ok) {
                 const data = await response.json();
-                login(data.token, data.user.role);
+                login(data.token, data.user.role,data.user.userId);
                 if (data.user.role === 'admin') {
                     navigate('/admin');
                 } else {
