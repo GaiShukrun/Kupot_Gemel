@@ -1,8 +1,6 @@
 import React, { useEffect, useState,useContext  } from 'react';
 import { useParams } from 'react-router-dom';
-import {ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import './FundAnalytics.css';
-import CustomTooltip from './Tooltip';  
 import { AuthContext } from './AuthContext'; 
 
 function FundAnalytics() {
@@ -81,214 +79,6 @@ function FundAnalytics() {
   if (!latestFund) return <div>Loading...</div>;
 
 
-
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-  function convertReportPeriodToDate(reportPeriod) {
-    const year = Math.floor(reportPeriod / 100);
-    const month = reportPeriod % 100 - 1; // JavaScript months are 0-indexed
-    return new Date(year, month, 1);
-  }
-
-  function HistoricalYieldChart({ data }) {
-    const chartData = data.map(item => ({
-      date: convertReportPeriodToDate(item.reportPeriod),
-      monthlyYield: item.monthlyYield,
-      yearToDateYield: item.yearToDateYield
-    }));
-  
-    return (
-      <div className="chart-wrapper">
-        <h2>
-          Historical Yield
-          <CustomTooltip text="This chart presents the historical monthly and year-to-date yields of the fund." />
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <XAxis 
-              dataKey="date" 
-              type="category" 
-              tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              reversed={true}
-            />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip 
-              labelFormatter={(date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            />
-            <Legend />
-            <Line type="monotone" dataKey="monthlyYield" stroke="#8884d8" name="Monthly Yield" />
-            <Line type="monotone" dataKey="yearToDateYield" stroke="#82ca9d" name="YTD Yield" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-  
-  function HistoricalAssetsChart({ data }) {
-    const chartData = data.map(item => ({
-      date: convertReportPeriodToDate(item.reportPeriod),
-      totalAssets: item.totalAssets
-    }));
-  
-    return (
-      <div className="chart-wrapper">
-       <h2>
-          Total Assets Over Time
-          <CustomTooltip text="This chart shows how the total assets managed by the fund have changed over time." />
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <XAxis 
-              dataKey="date" 
-              type="category" 
-              tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              reversed={true}
-            />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip 
-              labelFormatter={(date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            />
-            <Line type="monotone" dataKey="totalAssets" stroke="#8884d8" name="Total Assets" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-  function prepareYieldPerformanceData(data) {
-    return data.map(item => ({
-      date: convertReportPeriodToDate(item.reportPeriod),
-      monthly: item.monthlyYield,
-      ytd: item.yearToDateYield,
-      threeYears: item.yieldTrailing3Yrs,
-      fiveYears: item.yieldTrailing5Yrs
-    }));
-  }
-  
-  function prepareFundExposuresData(data) {
-    return data.map(item => ({
-      date: convertReportPeriodToDate(item.reportPeriod),
-      liquidAssets: item.liquidAssetsPercent,
-      stockMarket: item.stockMarketExposure,
-      foreign: item.foreignExposure,
-      foreignCurrency: item.foreignCurrencyExposure
-    }));
-  }
-  
-  function prepareAssetAllocationData(data) {
-    return data.map(item => ({
-      date: convertReportPeriodToDate(item.reportPeriod),
-      liquidAssets: item.liquidAssetsPercent,
-      stockMarket: item.stockMarketExposure,
-      foreign: item.foreignExposure,
-      foreignCurrency: item.foreignCurrencyExposure
-    }));
-  }
-
-
-  function YieldPerformanceChart({ data }) {
-    const chartData = prepareYieldPerformanceData(data);
-    
-    return (
-      <div className="chart-wrapper">
-         <h2>
-          Yield Performance
-          <CustomTooltip text="This chart shows the fund's yield performance over time." />
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData}>
-            <XAxis 
-              dataKey="date" 
-              type="category" 
-              tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              reversed={true}
-            />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip labelFormatter={(date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} />
-            <Legend />
-            <Line type="monotone" dataKey="monthly" name="Monthly" stroke="#8884d8" />
-            <Line type="monotone" dataKey="ytd" name="YTD" stroke="#82ca9d" />
-            <Line type="monotone" dataKey="threeYears" name="3 Years" stroke="#ffc658" />
-            <Line type="monotone" dataKey="fiveYears" name="5 Years" stroke="#ff8042" />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-  
-  function FundExposuresChart({ data }) {
-    const chartData = prepareFundExposuresData(data);
-    
-    return (
-      <div className="chart-wrapper">
-        <h2>
-          Fund Exposures
-          <CustomTooltip text="This chart displays the fund's exposure to different asset classes over time." />
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
-            <XAxis 
-              dataKey="date" 
-              type="category" 
-              tickFormatter={(date) => date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-              reversed={true}
-            />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip labelFormatter={(date) => date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} />
-            <Legend />
-            <Bar dataKey="liquidAssets" name="Liquid Assets" stackId="a" fill="#8884d8" />
-            <Bar dataKey="stockMarket" name="Stock Market" stackId="a" fill="#82ca9d" />
-            <Bar dataKey="foreign" name="Foreign" stackId="a" fill="#ffc658" />
-            <Bar dataKey="foreignCurrency" name="Foreign Currency" stackId="a" fill="#ff8042" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-  
-  function AssetAllocationChart({ data }) {
-    const chartData = prepareAssetAllocationData(data);
-    const latestData = chartData[chartData.length - 1];
-    
-    return (
-      <div className="chart-wrapper">
-        <h2>
-          Asset Allocation
-          <CustomTooltip text="This pie chart shows the current allocation of the fund's assets." />
-        </h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={[
-                { name: 'Liquid Assets', value: latestData.liquidAssets },
-                { name: 'Stock Market', value: latestData.stockMarket },
-                { name: 'Foreign', value: latestData.foreign },
-                { name: 'Foreign Currency', value: latestData.foreignCurrency }
-              ]}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              {COLORS.map((color, index) => (
-                <Cell key={`cell-${index}`} fill={color} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-    );
-  }
-
- 
-
   return (
     <div className="fund-analytics">
       <div className="fund-header">
@@ -297,10 +87,9 @@ function FundAnalytics() {
             onClick={addToFavorites} 
             style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '1.2em' }}
             role="img" 
-            aria-label="Add to favorites"
-          >
-            ⭐
+            aria-label="Add to favorites" > ⭐
           </span>
+          
         </h1>
         <div className="fund-details">
           <div className="detail-item">
@@ -316,15 +105,6 @@ function FundAnalytics() {
             <span className="detail-value">{latestFund.totalAssets}</span>
           </div>
         </div>
-      </div>
-
-      <div className="chart-container">
-      <YieldPerformanceChart data={fundData} />
-      <FundExposuresChart data={fundData} />
-      <AssetAllocationChart data={fundData} />
-      <HistoricalYieldChart data={fundData} />
-      <HistoricalAssetsChart data={fundData} />
-       
       </div>
 
       <div className="additional-info">
