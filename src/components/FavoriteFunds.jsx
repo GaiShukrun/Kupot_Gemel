@@ -2,21 +2,24 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+
 import './FavoriteFunds.css';
 
 function FavoriteFunds() {
   const [favoriteFunds, setFavoriteFunds] = useState([]);
   const { isAuthenticated, userId } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated ) {
       fetchFavoriteFunds();
     }
   }, [isAuthenticated, userId]);
 
   const fetchFavoriteFunds = async () => {
     console.log(userId);
+    setIsLoading(true);
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}/favorite-funds`, {
         headers: {
@@ -31,8 +34,11 @@ function FavoriteFunds() {
       }
     } catch (error) {
       console.error('Error fetching favorite funds:', error);
+    } finally {
+      setIsLoading(false); 
     }
   };
+
 
   const handleRowClick = (fundName) => {
     navigate(`/analytics/${encodeURIComponent(fundName)}`);
@@ -62,39 +68,39 @@ function FavoriteFunds() {
   return (
     <div className="favorite-funds">
       <h2>My Favorite Funds</h2>
-      {favoriteFunds.length > 0 ? (
+      {isLoading ? (
+        <p>Loading...</p>
+      ) : favoriteFunds.length > 0 ? (
         <table>
-        <thead>
-          <tr>
-            <th>Fund Name</th>
-            <th>Classification</th>
-            <th>Total Assets</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {favoriteFunds.map((fund) => (
-            <tr key={fund.fundId} onClick={() => handleRowClick(fund.fundName)}>
-              <td>{fund.fundName}</td>
-              <td>{fund.fundClassification}</td>
-              <td>{fund.totalAssets}</td>
-              <td>
-                <button 
-                  onClick={(e) => handleRemove(fund.fundId, e)}
-                  className="remove-btn"
-                >
-                  Remove
-                </button>
-              </td>
+          <thead>
+            <tr>
+              <th>Fund Name</th>
+              <th>Classification</th>
+              <th>Total Assets</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-      ): (
-        <h3>No favorites fund found!. <a href="/">click here</a> to see all funds</h3>
-      )
-    }
-      
+          </thead>
+          <tbody>
+            {favoriteFunds.map((fund) => (
+              <tr key={fund.fundId} onClick={() => handleRowClick(fund.fundName)}>
+                <td>{fund.fundName}</td>
+                <td>{fund.fundClassification}</td>
+                <td>{fund.totalAssets}</td>
+                <td>
+                  <button 
+                    onClick={(e) => handleRemove(fund.fundId, e)}
+                    className="remove-btn"
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <h3>No favorite funds found! <a href="/">Click here</a> to see all funds</h3>
+      )}
     </div>
   );
 }

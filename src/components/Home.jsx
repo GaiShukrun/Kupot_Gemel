@@ -5,63 +5,17 @@ import Pagination from './Pagination';
 import Tooltip from './Tooltip';
 
 
-// *****
 function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  // const [hasAnswered, setHasAnswered] = useState(false);
-  // const [isLoading, setIsLoading] = useState(true);
-
-  // const [userAnswers, setUserAnswers] = useState({});
-  // const [recommendedFunds, setRecommendedFunds] = useState([]);
-
-
-  // useEffect(() => {
-  //   const checkUserAndAnswers = async () => {
-  //     setIsLoading(true);
-  //     const token = localStorage.getItem('token');
-  //     if (token) {
-  //       const user = JSON.parse(atob(token.split('.')[1]));
-  //       setUser(user);
-  
-  //       try {
-  //         const isAnsweredResponse = await fetch(`http://localhost:5000/api/users/isAnswered/${user.username}`);
-  //         const isAnsweredData = await isAnsweredResponse.json();
-  //         setHasAnswered(isAnsweredData);
-
-  //         if (isAnsweredData) {
-  //           const fundsResponse = await fetch(`http://localhost:5000/api/users/recommend-funds/${user.username}`);
-  //           if (!fundsResponse.ok) {
-  //             throw new Error('Network response was not ok');
-  //           }
-  //           const fundsData = await fundsResponse.json();
-  //           setRecommendedFunds(fundsData);
-  //         }
-  //       } catch (error) {
-  //         console.error('Error:', error);
-  //       }
-  //     }
-  //     setIsLoading(false);
-  //   };
-
-  //   checkUserAndAnswers();
-  // }, []);
-
-
-
-
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
-
-
-
   const [funds, setFunds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [fundsPerPage] = useState(25);
   const [searchTerms, setSearchTerms] = useState({});
   const [sortCriteria, setSortCriteria] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
+  const [loading, setLoading] = useState(true); 
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -73,6 +27,7 @@ function Home() {
   }, []);
 
   const fetchFunds = async () => {
+    setLoading(true);
     try {
       const response = await fetch('http://localhost:5000/api/funds');
       if (response.ok) {
@@ -84,6 +39,8 @@ function Home() {
       }
     } catch (error) {
       console.error('Error fetching funds:', error);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -169,58 +126,64 @@ function Home() {
           </div>
         </div>
 
-      <div className="funds-table-container">
-        <table className="funds-table">
-          <thead>
-            <tr>
-              <th>Fund Name</th>
-              <th>
-                Classification
-                <Tooltip text="The category or type of the fund" />
-              </th>
-              <th>
-                Controlling Corporation
-                <Tooltip text="The company that controls or manages the fund" />
-              </th>
-              <th>
-                Total Assets
-                <Tooltip text="The total value of assets managed by the fund" />
-              </th>
-              <th>
-                Monthly Yield
-                <Tooltip text="The percentage return of the fund over the last month" />
-              </th>
-              <th>
-                Report Period
-              </th>
-              {/* <th>
-                Add to Favorite
-              </th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {currentFunds.map((fund) => (
-                <tr key={fund._id} onClick={() => handleFundClick(fund.fundName)}>
-                <td>{fund.fundName}  </td>
-                <td>{fund.fundClassification}</td>
-                <td>{fund.controllingCorporation}</td>
-                <td>{fund.totalAssets}</td>
-                <td>{fund.monthlyYield}%</td>
-                <td>
-                  {(() => {
-                    const period = fund.reportPeriod.toString();
-                    const year = period.slice(0, 4);
-                    const month = period.slice(4, 6);
-                    return `${month}/${year}`;
-                  })()}
-                </td>
-                {/* <td><button>Add to favorites</button></td> */}
-
+        {loading ? (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontSize: '2em'
+        }}>
+          <p>Loading...</p>
+        </div>  
+      ) : (
+        <div className="funds-table-container">
+          <table className="funds-table">
+            <thead>
+              <tr>
+                <th>Fund Name</th>
+                <th>
+                  Classification
+                  <Tooltip text="The category or type of the fund" />
+                </th>
+                <th>
+                  Controlling Corporation
+                  <Tooltip text="The company that controls or manages the fund" />
+                </th>
+                <th>
+                  Total Assets
+                  <Tooltip text="The total value of assets managed by the fund" />
+                </th>
+                <th>
+                  Monthly Yield
+                  <Tooltip text="The percentage return of the fund over the last month" />
+                </th>
+                <th>
+                  Report Period
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {currentFunds.map((fund) => (
+                <tr key={fund._id} onClick={() => handleFundClick(fund.fundName)}>
+                  <td>{fund.fundName}</td>
+                  <td>{fund.fundClassification}</td>
+                  <td>{fund.controllingCorporation}</td>
+                  <td>{fund.totalAssets}</td>
+                  <td>{fund.monthlyYield}%</td>
+                  <td>
+                    {(() => {
+                      const period = fund.reportPeriod.toString();
+                      const year = period.slice(0, 4);
+                      const month = period.slice(4, 6);
+                      return `${month}/${year}`;
+                    })()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
       <Pagination
          fundsPerPage={fundsPerPage}
          totalFunds={sortedFunds.length}
