@@ -22,7 +22,7 @@ const AuthProvider = ({ children }) => {
                 setUserRole(payload.role);
                 setUserFirstName(payload.firstname);
                 setUserLastName(payload.lastname);
-                setUserId(payload.userId); // Add this line to set the userId
+                setUserId(payload.userId);
 
             } catch (error) {
                 console.error('Error parsing token:', error);
@@ -31,14 +31,13 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    const login = (token, role, firstName, lastName) => {
+    const login = (token, role, firstName, lastName, userId) => {
         localStorage.setItem('token', token);
         setIsAuthenticated(true);
         setUserRole(role);
         setUserFirstName(firstName);
         setUserLastName(lastName);
-        setUserId(null); // Set the userId when logging in
-
+        setUserId(userId);
     };
 
     const logout = () => {
@@ -52,7 +51,7 @@ const AuthProvider = ({ children }) => {
 
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userRole,userId,userFirstName, userLastName, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, userRole, userId, userFirstName, userLastName, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

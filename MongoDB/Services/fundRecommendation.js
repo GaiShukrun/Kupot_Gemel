@@ -15,17 +15,17 @@ function scoreFund(fund, userAnswers) {
   const fundClassification = allValues[question-1];
   if (fundClassification === "כל הקופות") { // no score
   } else if (fundClassification === "תגמולים ואישית לפיצויים" && fund.fundClassification === "תגמולים ואישית לפיצויים") {
-    score += 450;
+    score += 10000;
   } else if (fundClassification === "קרנות השתלמות" && fund.fundClassification === "קרנות השתלמות") {
-    score += 450;
+    score += 10000;
   } else if (fundClassification === "קופת גמל להשקעה" && fund.fundClassification === "קופת גמל להשקעה") {
-    score += 450;
+    score += 10000;
   } else if (fundClassification === "קופת גמל להשקעה - חסכון לילד" && fund.fundClassification === "קופת גמל להשקעה - חסכון לילד") {
-    score += 450;
+    score += 10000;
   } else if (fundClassification === "מרכזית לפיצויים" && fund.fundClassification === "מרכזית לפיצויים") {
-    score += 450;
+    score += 10000;
   } else if (fundClassification === "מטרה אחרת" && fund.fundClassification === "מטרה אחרת") {
-    score += 450;
+    score += 10000;
   }
 
 
@@ -207,12 +207,6 @@ function scoreFund(fund, userAnswers) {
     score += fund.yieldTrailing5Yrs * 100;
   }
 
-
-
-
-
-
-  
   return score.toFixed(2);
   }
   

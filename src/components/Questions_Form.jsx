@@ -307,7 +307,7 @@ const Questions_Form = () => {
 
             if (response.ok) {
                 alert('Answers saved successfully');
-                navigate('/');
+                navigate('/recommended-funds');
             } else {
                 alert(`Error saving answers: ${responseData.message}`);
             }

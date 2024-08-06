@@ -61,7 +61,7 @@ describe('Login Component', () => {
   test('submits the form and logs in successfully', async () => {
     global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user', firstname: 'John', lastname: 'Doe' } }),
+      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user', firstname: 'John', lastname: 'Doe', userId: 'fake123456' } }),
     });
 
     renderWithRouter(<Login />);
@@ -71,7 +71,7 @@ describe('Login Component', () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user', 'John', 'Doe');
+      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user', 'John', 'Doe', 'fake123456');
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
