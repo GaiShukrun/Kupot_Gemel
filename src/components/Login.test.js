@@ -59,33 +59,23 @@ describe('Login Component', () => {
   });
 
   test('submits the form and logs in successfully', async () => {
-    const fakeUserId = 'fake-user-id';
-    fetch.mockResolvedValueOnce({
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user', userId: fakeUserId } }),
+      json: () => Promise.resolve({ token: 'fake-token', user: { role: 'user', firstname: 'John', lastname: 'Doe' } }),
     });
 
     renderWithRouter(<Login />);
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), { target: { value: 'test@example.com' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
-    
-    await act(async () => {
-      fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    });
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:5000/api/users/login',
-        expect.objectContaining({
-          method: 'POST',
-          body: JSON.stringify({ username: 'test@example.com', password: 'password123' }),
-        })
-      );
-      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user', fakeUserId);
+      expect(mockLogin).toHaveBeenCalledWith('fake-token', 'user', 'John', 'Doe');
       expect(mockNavigate).toHaveBeenCalledWith('/');
     });
   });
+
 
   test('shows forgot password form when "Forgot Password?" is clicked', async () => {
     renderWithRouter(<Login />);

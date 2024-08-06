@@ -14,8 +14,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const mockFunds = [
-  { _id: '1', fundName: 'Fund A', fundClassification: 'Type A', controllingCorporation: 'Corp A', totalAssets: 1000000, monthlyYield: 5 },
-  { _id: '2', fundName: 'Fund B', fundClassification: 'Type B', controllingCorporation: 'Corp B', totalAssets: 2000000, monthlyYield: 6 },
+  { _id: '1', fundName: 'Fund A', fundClassification: 'Type A', controllingCorporation: 'Corp A', totalAssets: 1000000, monthlyYield: 5, reportPeriod: 202401 },
+  { _id: '2', fundName: 'Fund B', fundClassification: 'Type B', controllingCorporation: 'Corp B', totalAssets: 2000000, monthlyYield: 6, reportPeriod: 202402 },
 ];
 
 describe('Home Component', () => {
