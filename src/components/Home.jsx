@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import './Home.css';
 import Pagination from './Pagination';
 import Tooltip from './Tooltip';
+import ScrollButton from './ScrollButton'; // Adjust the import path as necessary
 
 
 function Home() {
@@ -15,7 +16,8 @@ function Home() {
   const [sortCriteria, setSortCriteria] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
   const [loading, setLoading] = useState(true); 
-
+  
+  
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -88,9 +90,63 @@ function Home() {
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+
   return (
     <div>
-        <h2> </h2>
+    <div className="landing-page">
+      <main className="main">
+
+        <section className="logo-landing">
+          <div className="logo-landing-image">
+            <div className="image-container-fund-list">
+              <img src="/images/LogoText.png" alt="Logo " />
+            </div>
+            <div className="button-container-fund-list">
+              <ScrollButton targetId="data-section" duration={1800} className="logo-landing-cta" text="↓ לרשימת קופות גמל"/>
+            </div>
+          </div>
+        </section>
+
+        <section class="features">
+          <div class="features-content">
+            <div class="features-image">
+              <img src="/images/Questions-Landing.png" alt="Questions" />
+            </div>
+            <div class="features-text">
+              <h2 class="features-title">תנו לנו לעזור לכם לבחור קופת גמל</h2>
+              <p class="features-description">
+                 מחפשים את קופת הגמל המושלמת עבורכם? בעזרת שאלון קצר,
+                  מערכת הבינה המלאכותית החדשנית והייחודית שלנו תתאים לכם את הקופה הטובה ביותר,
+                  בהתבסס על הצרכים וההעדפות האישיים שלכם.
+                  מלאו את השאלון וקבלו את הבחירה המושלמת לחיסכון העתידי שלכם 
+              </p>
+              <a href="/questions-form" class="features-button">לשאולון האישי</a>
+            </div>  
+          </div>
+        </section>
+
+        <section class="features">
+          <div class="features-content">
+            <div class="features-text">
+              <h2 class="features-title">עקוב אחרי הקופות שמעניינות אותך</h2>
+              <p class="features-description">
+              אל תפספסו אף הזדמנות!
+              הוסיפו את קופות הגמל המועדפות עליכם למעקב,
+              ותוכלו לעקוב בקלות אחרי הביצועים שלהן.
+              כך תוכלו לנהל את החיסכון שלכם בצורה חכמה יותר,
+              ולעקוב אחרי כל שינוי שיכול להשפיע על העתיד הכלכלי שלכם
+              </p>
+              <a href="/favorite-funds" class="features-button">למועדפים</a>
+            </div>  
+            <div class="features-image">
+              <img src="/images/Favorite-Landing.png" alt="Questions" />
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <div className="fund-list"id="data-section">
+        <h2> רשימת קופות גמל </h2>
         <div className="search-container">
           {[
             { key: 'fundName', label: 'Fund Name' },
@@ -190,6 +246,10 @@ function Home() {
          paginate={paginate}
          currentPage={currentPage}
       />
+    </div>
+    <footer className="footer">
+        <p className="footer-text">&copy; 2024 Team 34. All rights reserved.</p>
+    </footer>
     </div>
   );
 }

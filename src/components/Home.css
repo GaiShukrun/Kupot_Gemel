@@ -1,8 +1,10 @@
 body {
-  background-image: linear-gradient(305deg, #FFFFFF 0%, #d0e7ff 100%);
+  /* background-image: linear-gradient(305deg, #FFFFFF 0%, #d0e7ff 100%); */
+  background-color: #ffffff;
+  overflow-x: hidden;
 }
 
-.questions-form-button {
+/* .questions-form-button {
   background-color: #4CAF50;
   color: white;
   padding: 15px 20px;
@@ -18,10 +20,10 @@ body {
 
 .questions-form-button:hover {
   background-color: #45a049;
-}
+} */
 
 .funds-table-container {
-  padding-top: 30px; /* Adjust this value as needed */
+  padding-top: 30px; 
 }
 
 .funds-table {
@@ -122,6 +124,18 @@ body {
   background-color: #fff;
   border-color: #dee2e6;
 }
+
+
+.fund-list h2 {
+  font-size: 3.5em; /* Makes the text bigger */
+  text-align: center; /* Centers the text */
+  margin-top: 95px; /* Adds space above the element */
+  margin-bottom: 50px; /* Adds space below the element */
+  color: #011F30;
+}
+
+
+
 .search-container {
   display: flex;
   justify-content: center;
@@ -236,4 +250,197 @@ body {
   background-color: #003366; /* Navy blue */
   color: white; /* Change text color to white for better contrast */
   cursor: pointer; /* Change cursor to pointer to indicate clickability */
+}
+
+/* Reset some default styles */
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+} */
+
+/* Global styles */
+/* body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+} */
+
+/* Header styles */
+.header {
+  padding: 20px;
+}
+
+.nav ul {
+  list-style-type: none;
+  display: flex;
+  justify-content: center;
+}
+
+.nav li {
+  margin: 0 10px;
+}
+
+.nav a {
+  text-decoration: none;
+  color: #333;
+}
+
+/* Hero section styles */
+.logo-landing {
+  padding: 80px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-landing-content {
+  flex: 1;
+  text-align: left;
+  margin-right: 40px;
+}
+
+.logo-landing-title {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.logo-landing-description {
+  font-size: 18px;
+  margin-bottom: 40px;
+}
+
+.logo-landing-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.image-container-fund-list {
+  margin-bottom: 20px;
+}
+
+.image-container-fund-list img {
+  max-width: 70%;
+  height: auto;
+}
+
+.button-container-fund-list {
+  text-align: left; 
+  width: 100%; /* Make the button container take up the full width */
+  padding-left: 900px; /* Add some left padding */
+}
+
+.logo-landing-cta {
+  background-color: #011F30;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 20px 36px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Features section styles */
+.features {
+  padding: 30px;
+  font-family: 'Arial', sans-serif;
+  text-align: right;
+}
+
+.features-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.features-text {
+  max-width: 50%;
+  font-size: 16px;
+  padding: 20px;
+}
+
+.features-title {
+  letter-spacing:2px;
+  font-size: 5em;
+  color: #011F30;
+  margin-bottom: 10px;
+}
+
+.features-description {
+  line-height: 1.35;
+  font-size: 1.4em;
+  color: #011F30;
+  margin-bottom: 20px;
+}
+
+.features-button {
+  display: inline-block;
+  background-color: #011F30;
+  color: white;
+  padding: 20px 36px;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 1.25em;
+}
+
+.features-image {
+  max-width: 50%;
+}
+
+.features-image img {
+  width: 100%;
+  height: auto;
+}
+
+/* Testimonials section styles */
+.testimonials {
+  background-color: #f2f2f2;
+  padding: 60px 20px;
+}
+
+.testimonials-title {
+  font-size: 24px;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.testimonial-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.testimonial-item {
+  width: 400px;
+  margin: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-text {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.testimonial-author {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Footer styles */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+.footer-text {
+  font-size: 14px;
 }
