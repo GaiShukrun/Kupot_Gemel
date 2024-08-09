@@ -358,11 +358,11 @@ const Questions_Form = () => {
                     </div>
                 ))}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <button type="submit" className={isEditing ? 'update-button' : 'save-button'} style={{ backgroundColor: isEditing ? '#ffc107' : '#28a745', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                    <button type="submit" className={isEditing ? 'update-button' : 'save-button'}>
                         {isEditing ? 'Update' : 'Save'}
                     </button>
                     {isEditing && (
-                        <button type="button" onClick={handleDelete} style={{ backgroundColor: '#dc3545', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+                        <button type="button" className="delete-button" onClick={handleDelete} >
                             Delete
                         </button>
                     )}

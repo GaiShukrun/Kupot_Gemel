@@ -32,6 +32,10 @@
     text-decoration: underline;
 }
 
+.navbar-link-active {
+    color: #b1cdcd;
+  }
+
 /* Style for logout button */
 .navbar-item button {
     background: none;
@@ -45,3 +49,13 @@
 .navbar-item button:hover {
     text-decoration: underline;
 }
+
+.navbar-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-size: 18px;
+    padding: 0;
+    text-decoration: none;
+  }

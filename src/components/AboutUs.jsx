@@ -1,7 +1,6 @@
 // AboutUs.jsx
 import React from 'react';
 import './AboutUs.css';
-import financialMarketImage from './financialMarketImage.jpg';
 
 const AboutUs = () => {
   return (
@@ -15,7 +14,7 @@ const AboutUs = () => {
       <p>Our platform includes various funds, each with unique characteristics and performance metrics. We analyze and recommend the best options based on your personal preferences and financial goals.</p>
       <h2>What is a Fund?</h2>
       <p>A fund is a pool of money collected from many investors to invest in securities such as stocks, bonds, money market instruments, and other assets. Funds are managed by professional fund managers who allocate the fund's assets and attempt to produce capital gains and income for the fund's investors. The structure of the fund provides diversification, which helps in spreading risk.</p>
-      <img src={financialMarketImage} alt="Financial Market" className="financial-market-image" />
+      <img src="/images/financialMarketImage.jpg" alt="Financial Market" className="financial-market-image" />
 
     </div>
   );
