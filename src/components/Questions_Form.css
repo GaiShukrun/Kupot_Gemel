@@ -29,9 +29,10 @@
     font-size: 16px;
 }
 
-/* Button styles */
+/* Button common styles */
 button.save-button,
-button.update-button {
+button.update-button,
+button.delete-button {
     display: inline-block;
     padding: 10px 20px;
     margin-top: 20px;
@@ -43,27 +44,39 @@ button.update-button {
     text-transform: uppercase;
     cursor: pointer;
     transition: background-color 0.3s ease;
+
 }
 
+/* Specific button colors */
 button.save-button {
     background-color: #28a745;
 }
-button.update-button{
-    background-color: #ffc107;
+
+button.update-button {
+    background-color: #011F30;
 }
 
+button.delete-button {
+    background-color: #dc3545;
+}
+
+/* Hover effects */
 button.save-button:hover {
     background-color: #218838;
 }
 
 button.update-button:hover {
-    background-color: #e0a800;
+    background-color: #011F30;
 }
 
+button.delete-button:hover {
+    background-color: #c82333;
+}
+
+/* Disabled button styles */
 button.save-button:disabled,
-button.update-button:disabled {
+button.update-button:disabled,
+button.delete-button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
 }
-
-
