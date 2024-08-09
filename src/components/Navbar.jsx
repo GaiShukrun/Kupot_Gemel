@@ -54,6 +54,9 @@ function Navbar() {
             <li className="navbar-item">
               <button className="navbar-link" onClick={handleLogout}>Logout</button>
             </li>
+            <li className="navbar-item">
+              <Link to="/about-us" className="navbar-link">About Us</Link>
+            </li>
           </>
         )}
       </ul>
