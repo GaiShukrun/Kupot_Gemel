@@ -38,7 +38,7 @@ function Navbar() {
         ) : (
           <>
            <li className="navbar-item">
-              <Link to="/favorite-funds" className="navbar-link">My Favorite Funds</Link>
+              <Link to="/favorite-funds" className="navbar-link">Favorite Funds</Link>
             </li>
             {userRole === 'admin' && (
               <li className="navbar-item">
@@ -49,7 +49,7 @@ function Navbar() {
               <Link to="/questions-form" className="navbar-link">Personal Questions</Link>
             </li>
             <li className="navbar-item">
-              <Link to="/recommended-funds" className="navbar-link">My Recommended Funds</Link>
+              <Link to="/recommended-funds" className="navbar-link">Recommended Funds</Link>
             </li>
             <li className="navbar-item">
               <button className="navbar-link" onClick={handleLogout}>Logout</button>

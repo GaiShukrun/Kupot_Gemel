@@ -1,10 +1,19 @@
-/* Apply box-sizing to all elements */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
 
+/* .fund-analytics,
+.fund-header,
+.fund-header h1,
+.fund-details,
+.detail-item,
+.chart-container,
+.chart-wrapper,
+.chart-wrapper h2,
+.additional-info,
+.additional-info h2,
+.info-grid,
+.info-item {
+  box-sizing: border-box;
+} */
+ 
 .fund-analytics {
   font-family: Arial, sans-serif;
   margin: 0 auto;
