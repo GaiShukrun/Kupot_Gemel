@@ -12,7 +12,7 @@ import Questions_Form from './components/Questions_Form';
 import RecommendedFunds from './components/RecommendedFunds';
 import FundAnalytics from './components/FundAnalytics';
 import FavoriteFunds from './components/FavoriteFunds';
-
+import AboutUs from './components/AboutUs';
 
 function App() {
     return (
@@ -30,6 +30,7 @@ function App() {
                         <Route path="/questions-form" element={<Questions_Form />} />
                         <Route path="/favorite-funds" element={ <FavoriteFunds/> } />
                         <Route path="/recommended-funds" element={< RecommendedFunds />} />
+                        <Route path="/about-us" element={<AboutUs />} />
                     </Routes>
                 </div>
             </Router>
