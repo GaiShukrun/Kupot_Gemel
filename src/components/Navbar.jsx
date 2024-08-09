@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
+
 function Navbar() {
   const { isAuthenticated, userRole, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     try {
@@ -13,46 +14,82 @@ function Navbar() {
       alert('Logout successful');
       navigate('/');
       navigate(0); // refresh
-
     } catch (error) {
       console.error('Logout error:', error);
       alert('Logout failed');
     }
   };
 
+  const isActive = (path) => location.pathname === path;
+
+  const navbarStyles = {
+    backgroundColor: '#007BFF',
+    padding: '10px',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  };
+
+  const listStyles = {
+    listStyle: 'none',
+    display: 'flex',
+    margin: 0,
+    padding: 0,
+  };
+
+  const itemStyles = {
+    margin: '0 15px',
+  };
+
+  const linkStyles = (active) => ({
+    color: active ? '#b1cdcd' : 'white',
+    textDecoration: 'none',
+    fontSize: '18px',
+  });
+
+  const buttonStyles = {
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    color: 'white',
+    fontSize: '18px',
+    padding: 0,
+    textDecoration: 'none',
+  };
+
   return (
-    <nav className="navbar">
-      <ul className="navbar-list">
-        <li className="navbar-item">
-          <Link to="/" className="navbar-link">Home</Link>
+    <nav style={navbarStyles}>
+      <ul style={listStyles}>
+        <li style={itemStyles}>
+          <Link to="/" style={linkStyles(isActive('/'))}>Home</Link>
         </li>
         {!isAuthenticated ? (
           <>
-            <li className="navbar-item">
-              <Link to="/login" className="navbar-link">Login</Link>
+            <li style={itemStyles}>
+              <Link to="/login" style={linkStyles(isActive('/login'))}>Login</Link>
             </li>
-            <li className="navbar-item">
-              <Link to="/register" className="navbar-link">Register</Link>
+            <li style={itemStyles}>
+              <Link to="/register" style={linkStyles(isActive('/register'))}>Register</Link>
             </li>
           </>
         ) : (
           <>
-           <li className="navbar-item">
-              <Link to="/favorite-funds" className="navbar-link">My Favorite Funds</Link>
+            <li style={itemStyles}>
+              <Link to="/favorite-funds" style={linkStyles(isActive('/favorite-funds'))}>My Favorite Funds</Link>
             </li>
             {userRole === 'admin' && (
-              <li className="navbar-item">
-                <Link to="/admin" className="navbar-link">User Management</Link>
+              <li style={itemStyles}>
+                <Link to="/admin" style={linkStyles(isActive('/admin'))}>User Management</Link>
               </li>
             )}
-            <li className="navbar-item">
-              <Link to="/questions-form" className="navbar-link">Personal Questions</Link>
+            <li style={itemStyles}>
+              <Link to="/questions-form" style={linkStyles(isActive('/questions-form'))}>Personal Questions</Link>
             </li>
-            <li className="navbar-item">
-              <Link to="/recommended-funds" className="navbar-link">My Recommended Funds</Link>
+            <li style={itemStyles}>
+              <Link to="/recommended-funds" style={linkStyles(isActive('/recommended-funds'))}>My Recommended Funds</Link>
             </li>
-            <li className="navbar-item">
-              <button className="navbar-link" onClick={handleLogout}>Logout</button>
+            <li style={itemStyles}>
+              <button style={buttonStyles} onClick={handleLogout}>Logout</button>
             </li>
           </>
         )}
