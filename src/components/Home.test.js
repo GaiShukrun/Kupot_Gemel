@@ -36,6 +36,10 @@ describe('Home Component', () => {
       );
     });
     
+    expect(screen.getByText('תנו לנו לעזור לכם לבחור קופת גמל')).toBeInTheDocument();
+    expect(screen.getByText('עקוב אחרי הקופות שמעניינות אותך')).toBeInTheDocument();
+    expect(screen.getByText('לשאולון האישי')).toBeInTheDocument();
+    expect(screen.getByText('למועדפים')).toBeInTheDocument();
     expect(screen.getByText('Fund Name')).toBeInTheDocument();
     expect(screen.getByText('Classification')).toBeInTheDocument();
     expect(screen.getByText('Controlling Corporation')).toBeInTheDocument();
