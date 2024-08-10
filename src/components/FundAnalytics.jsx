@@ -1,9 +1,11 @@
-import React, { useEffect, useState,useContext  } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import {ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import './FundAnalytics.css';
-import CustomTooltip from './Tooltip';  
-import { AuthContext } from './AuthContext'; 
+import CustomTooltip from './Tooltip';
+import { AuthContext } from './AuthContext';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 function FundAnalytics() {
 
@@ -11,6 +13,8 @@ function FundAnalytics() {
   const [fundData, setFundData] = useState([]);
   const [latestFund, setLatestFund] = useState(null);
   const { isAuthenticated } = useContext(AuthContext);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isJittering, setIsJittering] = useState(false);
 
   useEffect(() => {
     const fetchFundData = async () => {
@@ -37,6 +41,8 @@ function FundAnalytics() {
       alert('Please log in to add favorites');
       return;
     }
+    const token = localStorage.getItem('token');
+    console.log('Token from local storage:', token);
 
     const fundToAdd = {
       fundId: latestFund.fundId,
@@ -67,6 +73,9 @@ function FundAnalytics() {
       });
 
       if (response.ok) {
+        setIsFavorite(true);
+        setIsJittering(true);
+        setTimeout(() => setIsJittering(false), 1000);
         alert('Fund added to favorites!');
       } else {
         const errorData = await response.json();
@@ -287,18 +296,41 @@ function FundAnalytics() {
     );
   }
 
-
- 
+  const downloadPDF = async () => {
+    const element = document.querySelector('.fund-analytics');
+    const canvas = await html2canvas(element);
+    const dataURL = canvas.toDataURL('image/png');
+    const pdf = new jsPDF();
+    const imgProperties = pdf.getImageProperties(dataURL);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+    pdf.addImage(dataURL, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${latestFund?.fundName}.pdf`);
+  };
 
   return (
     <div className="fund-analytics">
       <div className="fund-header">
         <h1>{latestFund?.fundName}
-        <span 
-            onClick={addToFavorites} 
+        <span
+            className="emoji-animation"
+            onClick={addToFavorites}
             style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '1.2em' }}
-            role="img" 
-            aria-label="Add to favorites" > ⭐
+            role="img"
+            aria-label="Add to favorites"
+            title="Add to favorites"
+          >
+            ⭐
+          </span>
+          <span
+            className="emoji-animation"
+            onClick={downloadPDF}
+            style={{ cursor: 'pointer', marginLeft: '10px', fontSize: '1.2em' }}
+            role="img"
+            aria-label="Download PDF"
+            title="Download PDF"
+          >
+            📄
           </span>
         </h1>
         <div className="fund-details">
