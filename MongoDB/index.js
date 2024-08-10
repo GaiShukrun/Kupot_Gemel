@@ -8,6 +8,8 @@ const { getBestFunds } = require('./Services/fundRecommendation');
 const User = require('./Models/Users');
 const Answer = require('./Models/Answer');
 const Fund = require('./Models/Data');
+const Ticket = require('./Models/Ticket');
+
 const app = express();
 app.use(express.json());
 
@@ -42,6 +44,32 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+
+/////////////////////////////// Create new ticket ///////////////////////////////
+app.post('/api/create-ticket', authenticateToken, async (req, res) => {
+  const {userId ,title, description } = req.body;
+  // Validation
+  if (!title || !description) {
+    return res.status(400).json({ msg: 'Please include both title and description' });
+  }
+  
+  try {
+    // Create a new ticket instance
+    const newTicket = new Ticket({
+      title,
+      description,
+      createdBy: userId
+    });
+
+    // Save the ticket to the database
+    const ticket = await newTicket.save();
+    res.json(ticket);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+//////////////////////////////////////////////////////////////////////////////////////
 
 app.post('/api/users/:userId/remove-favorite', authenticateToken, async (req, res) => {
   const { fundId } = req.body;

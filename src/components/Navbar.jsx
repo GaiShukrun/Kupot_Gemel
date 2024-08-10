@@ -74,6 +74,11 @@ function Navbar() {
               </Link>
             </li>
             <li className="navbar-item">
+              <Link to="/my-account" className={isActive('/my-account') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
+                My Account
+              </Link>
+            </li>
+            <li className="navbar-item">
               <button className="navbar-button" onClick={handleLogout}>Logout</button>
             </li>
           </>
