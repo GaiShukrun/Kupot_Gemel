@@ -43,7 +43,17 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
-
+/////////////////////////////// Get User-Specific Tickets ///////////////////////////////
+app.get('/api/get-user-tickets/:userId', authenticateToken, async (req, res) => {
+  const {userId } = req.params;
+  try {
+    const tickets = await Ticket.find({ createdBy: userId}).populate('createdBy', 'username');
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+//////////////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////// Create new ticket ///////////////////////////////
 app.post('/api/create-ticket', authenticateToken, async (req, res) => {

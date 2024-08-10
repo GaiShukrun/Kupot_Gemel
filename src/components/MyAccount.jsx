@@ -5,9 +5,29 @@ import './MyAccount.css';
 
 function MyAccount() {
   const {userId, userFirstName, userLastName} = useContext(AuthContext);
+  const [tickets, setTickets] = useState([]);
   const [showTicketForm, setShowTicketForm] = useState(false);
 
- 
+  useEffect(() => {
+    if (userId) {
+      fetchUserTickets();
+    }
+  }, [userId]);
+
+  const fetchUserTickets = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/get-user-tickets/${userId}`, {
+        headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}
+      });
+      if (!response.ok) {
+        throw new Error('Error fetching user tickets');
+      }
+      const data = await response.json();
+      setTickets(data);
+    } catch (error) {
+      console.error('Error fetching user tickets:', error);
+    }
+  };
 
   const toggleTicketForm = () => {
     setShowTicketForm(!showTicketForm);
@@ -18,7 +38,28 @@ function MyAccount() {
     setShowTicketForm(false);
   };
 
+  // Return color to the border-color by ticket status
+  const getBorderColor = (status) => {
+    switch(status) {
+      case 'Open':
+        return '#007bff';  // Blue
+      case 'In progress':
+        return '#ffc107';  // Yellow
+      case 'Closed':
+        return 'black';
+      default:
+        return '#007bff';  // Default to blue
+    }
+  };
 
+  // Sort tickets by status and then by created time
+  const sortedTickets = tickets.sort((a, b) => {
+    const statusOrder = ['Open', 'In progress', 'Closed'];
+    if (statusOrder.indexOf(a.status) !== statusOrder.indexOf(b.status)) {
+      return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
+    }
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
 
   return (
@@ -38,7 +79,24 @@ function MyAccount() {
         
         {showTicketForm && <TicketForm onTicketCreated={handleTicketCreated} userId={userId}/>}
 
-        
+        {tickets.length > 0 ? (
+          <ul className="ticket-list">
+            {sortedTickets.map(ticket => (
+              <li 
+              key={ticket._id} 
+              className="ticket-item" 
+              style={{ borderLeftColor: getBorderColor(ticket.status) }}
+              >
+                <h4>{ticket.title}</h4>
+                <p>Status: {ticket.status}</p>
+                {!ticket.response && <p>Still no response</p>}
+                {ticket.response && <p>Response: {ticket.response}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No tickets found.</p>
+        )}
       </div>
     </div>
   );
