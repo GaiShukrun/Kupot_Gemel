@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Home.css';
 import Pagination from './Pagination';
 import Tooltip from './Tooltip';
 import ScrollButton from './ScrollButton'; // Adjust the import path as necessary
+import { AuthContext } from './AuthContext';
+
 
 
 function Home() {
@@ -16,6 +18,7 @@ function Home() {
   const [sortCriteria, setSortCriteria] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
   const [loading, setLoading] = useState(true); 
+  const { isAuthenticated } = useContext(AuthContext);
   
   
 
@@ -47,6 +50,10 @@ function Home() {
   };
 
   const handleFundClick = (fundName) => {
+    if (!isAuthenticated) {
+      alert('Please log in to see analytics for fund '+ fundName);
+      return;
+    }
     navigate(`/analytics/${encodeURIComponent(fundName)}`);
   };
   const handleSearch = (criteria, value) => {
