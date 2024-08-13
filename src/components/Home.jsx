@@ -5,8 +5,7 @@ import Pagination from './Pagination';
 import Tooltip from './Tooltip';
 import ScrollButton from './ScrollButton'; // Adjust the import path as necessary
 import { AuthContext } from './AuthContext';
-
-
+import Loader from './Loader'
 
 function Home() {
   const navigate = useNavigate();
@@ -17,8 +16,9 @@ function Home() {
   const [searchTerms, setSearchTerms] = useState({});
   const [sortCriteria, setSortCriteria] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
-  const [loading, setLoading] = useState(true); 
   const { isAuthenticated } = useContext(AuthContext);
+  const [loadingFunds, setLoadingFunds] = useState(true);
+  const [loadingFeatures, setLoadingFeatures] = useState(true);
   
   
 
@@ -29,15 +29,17 @@ function Home() {
       setUser(user);
     }
     fetchFunds();
+    loadFeatures();
   }, []);
 
   const fetchFunds = async () => {
-    setLoading(true);
+    setLoadingFunds(true);
     try {
       const response = await fetch('http://localhost:5000/api/funds');
       if (response.ok) {
         const data = await response.json();
-        setFunds(data);
+        const uniqueData = removeDuplicates(data);
+        setFunds(uniqueData);
       } else {
         const errorData = await response.json();
         console.error('Error fetching funds:', errorData.message);
@@ -45,8 +47,25 @@ function Home() {
     } catch (error) {
       console.error('Error fetching funds:', error);
     } finally {
-      setLoading(false); 
+      setLoadingFunds(false); 
     }
+  };
+
+  const removeDuplicates = (funds) => {
+    const uniqueFunds = {};
+    return funds.filter(fund => {
+      if (!uniqueFunds[fund.fundName]) {
+        uniqueFunds[fund.fundName] = true;
+        return true;
+      }
+      return false;
+    });
+  };
+
+  const loadFeatures = () => {
+    setTimeout(() => {
+      setLoadingFeatures(false);
+    }, 1500);
   };
 
   const handleFundClick = (fundName) => {
@@ -106,14 +125,17 @@ function Home() {
         <section className="logo-landing">
           <div className="logo-landing-image">
             <div className="image-container-fund-list">
-              <img src="/images/LogoText.png" alt="Logo " />
+              <img src="/images/LogoText.png" alt="Logo" />
             </div>
             <div className="button-container-fund-list">
               <ScrollButton targetId="data-section" duration={1800} className="logo-landing-cta" text="↓ לרשימת קופות גמל"/>
             </div>
           </div>
         </section>
-
+        {loadingFeatures ? (
+            <Loader />
+          ) : (
+            <>
         <section class="features">
           <div class="features-content">
             <div class="features-image">
@@ -150,6 +172,8 @@ function Home() {
             </div>
           </div>
         </section>
+        </>
+          )}
       </main>
     </div>
     <div className="fund-list"id="data-section">
@@ -189,15 +213,8 @@ function Home() {
           </div>
         </div>
 
-        {loading ? (
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          fontSize: '2em'
-        }}>
-          <p>Loading...</p>
-        </div>  
+        {loadingFunds ? (
+        <Loader/>  
       ) : (
         <div className="funds-table-container">
           <table className="funds-table">
@@ -221,7 +238,7 @@ function Home() {
                   <Tooltip text="The percentage return of the fund over the last month" />
                 </th>
                 <th>
-                  Report Period
+                  3-Year Yield 
                 </th>
               </tr>
             </thead>
@@ -233,14 +250,15 @@ function Home() {
                   <td>{fund.controllingCorporation}</td>
                   <td>{fund.totalAssets}</td>
                   <td>{fund.monthlyYield}%</td>
-                  <td>
+                  <td>{fund.yieldTrailing3Yrs}%</td>
+                  {/* <td>
                     {(() => {
                       const period = fund.reportPeriod.toString();
                       const year = period.slice(0, 4);
                       const month = period.slice(4, 6);
                       return `${month}/${year}`;
                     })()}
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>
