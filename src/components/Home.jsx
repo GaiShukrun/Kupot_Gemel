@@ -6,6 +6,8 @@ import Tooltip from './Tooltip';
 import ScrollButton from './ScrollButton'; // Adjust the import path as necessary
 import { AuthContext } from './AuthContext';
 import Loader from './Loader'
+import LazyImage from './LazyImage';
+
 
 function Home() {
   const navigate = useNavigate();
@@ -125,7 +127,12 @@ function Home() {
         <section className="logo-landing">
           <div className="logo-landing-image">
             <div className="image-container-fund-list">
-              <img src="/images/LogoText.png" alt="Logo" />
+              <LazyImage
+                src="/images/LogoText.png"
+                alt="Logo"
+                placeholder="/images/placeholder.png"
+              />
+              {/* <img src="/images/LogoText.png" alt="Logo" /> */}
             </div>
             <div className="button-container-fund-list">
               <ScrollButton targetId="data-section" duration={1800} className="logo-landing-cta" text="↓ לרשימת קופות גמל"/>
@@ -139,7 +146,12 @@ function Home() {
         <section class="features">
           <div class="features-content">
             <div class="features-image">
-              <img src="/images/Questions-Landing.png" alt="Questions" />
+              <LazyImage
+                src="/images/Questions-Landing.png"
+                alt="Questions"
+                placeholder="/images/placeholder.png"
+              />
+              {/* <img src="/images/Questions-Landing.png" alt="Questions" /> */}
             </div>
             <div class="features-text">
               <h2 class="features-title">תנו לנו לעזור לכם לבחור קופת גמל</h2>
@@ -168,7 +180,12 @@ function Home() {
               <a href="/favorite-funds" class="features-button">למועדפים</a>
             </div>  
             <div class="features-image">
-              <img src="/images/Favorite-Landing.png" alt="Questions" />
+              <LazyImage
+                src="/images/Favorite-Landing.png"
+                alt="Questions"
+                placeholder="/images/placeholder.png"
+              />
+              {/* <img src="/images/Favorite-Landing.png" alt="Questions" /> */}
             </div>
           </div>
         </section>
