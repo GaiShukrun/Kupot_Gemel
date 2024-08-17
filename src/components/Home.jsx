@@ -53,9 +53,12 @@ function Home() {
     }
   };
 
+
+  //removing the duplicated names and keeping the latest reportPeriod
   const removeDuplicates = (funds) => {
     const uniqueFunds = {};
-    return funds.filter(fund => {
+    const sortedFunds = funds.sort((a, b) => b.reportPeriod - a.reportPeriod);
+    return sortedFunds.filter(fund => {
       if (!uniqueFunds[fund.fundName]) {
         uniqueFunds[fund.fundName] = true;
         return true;
@@ -130,7 +133,7 @@ function Home() {
               <LazyImage
                 src="/images/LogoText.png"
                 alt="Logo"
-                placeholder="/images/placeholder.png"
+                placeholder="/images/placeholder-LogoText.png"
               />
               {/* <img src="/images/LogoText.png" alt="Logo" /> */}
             </div>
@@ -149,7 +152,7 @@ function Home() {
               <LazyImage
                 src="/images/Questions-Landing.png"
                 alt="Questions"
-                placeholder="/images/placeholder.png"
+                placeholder="/images/placeholder-Questions-Landing.png"
               />
               {/* <img src="/images/Questions-Landing.png" alt="Questions" /> */}
             </div>
@@ -183,7 +186,7 @@ function Home() {
               <LazyImage
                 src="/images/Favorite-Landing.png"
                 alt="Questions"
-                placeholder="/images/placeholder.png"
+                placeholder="/images/placeholder-Favorite-Landing.png"
               />
               {/* <img src="/images/Favorite-Landing.png" alt="Questions" /> */}
             </div>
@@ -251,11 +254,11 @@ function Home() {
                   <Tooltip text="The total value of assets managed by the fund" />
                 </th>
                 <th>
-                  Monthly Yield
-                  <Tooltip text="The percentage return of the fund over the last month" />
+                  YTD Yield
+                  <Tooltip text="Year To Date - The percentage return of the fund since the first trading day of the current calendar year" />
                 </th>
                 <th>
-                  3-Year Yield 
+                  3-Year Yield
                 </th>
               </tr>
             </thead>
@@ -266,7 +269,7 @@ function Home() {
                   <td>{fund.fundClassification}</td>
                   <td>{fund.controllingCorporation}</td>
                   <td>{fund.totalAssets}</td>
-                  <td>{fund.monthlyYield}%</td>
+                  <td>{fund.yearToDateYield}%</td>
                   <td>{fund.yieldTrailing3Yrs}%</td>
                   {/* <td>
                     {(() => {
