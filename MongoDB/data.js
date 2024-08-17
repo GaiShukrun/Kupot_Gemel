@@ -56,8 +56,10 @@ const insertData = async (data) => {
           currentDate: new Date(item.CURRENT_DATE) // Convert to Date object
         }));
     for (const item of mapedData) {
-        const fund = new Fund(item);
-        await fund.save();
+        if (item.totalAssets != 0 || item.totalAssets == null ){
+            const fund = new Fund(item);
+            await fund.save();
+        }
     }
 };
 
