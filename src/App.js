@@ -14,6 +14,7 @@ import FundAnalytics from './components/FundAnalytics';
 import FavoriteFunds from './components/FavoriteFunds';
 import AboutUs from './components/AboutUs';
 import MyAccount from './components/MyAccount';
+import Tech from './components/Tech';
 
 function App() {
     return (
@@ -33,6 +34,7 @@ function App() {
                         <Route path="/recommended-funds" element={< RecommendedFunds />} />
                         <Route path="/about-us" element={<AboutUs />} />
                         <Route path="/my-account" element={<MyAccount />} />
+                        <Route path="/support-dashboard" element={<PrivateRoute element={Tech} />} />
                     </Routes>
                 </div>
             </Router>

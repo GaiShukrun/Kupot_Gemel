@@ -495,3 +495,45 @@ const port = process.env.PORT || 5000;
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
+
+/////////////////////////////// Get All Tickets (for Tech Support) ///////////////////////////////
+app.get('/api/tickets', authenticateToken, async (req, res) => {
+  // Only allow access if the user has the 'tech' role
+  if (req.user.role !== 'tech') {
+    return res.status(403).json({ msg: 'Access denied. Only tech support can view this page.' });
+  }
+
+  try {
+    const tickets = await Ticket.find().populate('createdBy', 'username');
+    res.json(tickets);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+//////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////// Update Ticket with Response and Status ///////////////////////////////
+app.put('/api/tickets/:id', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'tech') {
+      return res.status(403).json({ msg: 'Access denied. Only tech support can perform this action.' });
+  }
+
+  const { id } = req.params;
+  const { response, status } = req.body;
+
+  try {
+      const ticket = await Ticket.findById(id);
+      if (!ticket) {
+          return res.status(404).json({ msg: 'Ticket not found' });
+      }
+
+      ticket.response = response;
+      ticket.status = status || ticket.status; // Update status if provided, otherwise keep current status
+      await ticket.save();
+
+      res.json(ticket);
+  } catch (err) {
+      res.status(500).json({ msg: 'Server error' });
+  }
+});
+//////////////////////////////////////////////////////////////////////////////////////
+

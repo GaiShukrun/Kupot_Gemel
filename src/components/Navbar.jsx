@@ -58,6 +58,13 @@ function Navbar() {
                 </Link>
               </li>
             )}
+            {userRole === 'tech' && (
+              <li className="navbar-item">
+                <Link to="/support-dashboard" className={isActive('/support-dashboard') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
+                  Support Dashboard
+                </Link>
+              </li>
+            )}
             <li className="navbar-item">
               <Link to="/questions-form" className={isActive('/questions-form') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
                 Personal Questions

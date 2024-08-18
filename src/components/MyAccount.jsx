@@ -38,21 +38,20 @@ function MyAccount() {
     setShowTicketForm(false);
   };
 
-  // Return color to the border-color by ticket status
   const getBorderColor = (status) => {
     switch(status) {
       case 'Open':
-        return '#007bff';  // Blue
+        return '#007bff';  
       case 'In progress':
-        return '#ffc107';  // Yellow
+        return '#ffc107';  
       case 'Closed':
         return 'black';
       default:
-        return '#007bff';  // Default to blue
+        return '#007bff';  
     }
   };
 
-  // Sort tickets by status and then by created time
+
   const sortedTickets = tickets.sort((a, b) => {
     const statusOrder = ['Open', 'In progress', 'Closed'];
     if (statusOrder.indexOf(a.status) !== statusOrder.indexOf(b.status)) {
@@ -60,7 +59,6 @@ function MyAccount() {
     }
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
-
 
   return (
     <div className="my-account">
@@ -83,14 +81,17 @@ function MyAccount() {
           <ul className="ticket-list">
             {sortedTickets.map(ticket => (
               <li 
-              key={ticket._id} 
-              className="ticket-item" 
-              style={{ borderLeftColor: getBorderColor(ticket.status) }}
+                key={ticket._id} 
+                className="ticket-item" 
+                style={{ borderLeftColor: getBorderColor(ticket.status) }}
               >
                 <h4>{ticket.title}</h4>
                 <p>Status: {ticket.status}</p>
-                {!ticket.response && <p>Still no response</p>}
-                {ticket.response && <p>Response: {ticket.response}</p>}
+                {!ticket.response ? (
+                  <p>Still no response</p>
+                ) : (
+                  <p>Response: {ticket.response}</p>
+                )}
               </li>
             ))}
           </ul>

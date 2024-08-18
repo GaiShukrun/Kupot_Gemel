@@ -4,6 +4,7 @@ const router = express.Router();
 const { getBestFunds } = require('../Services/fundRecommendation');
 const User = require('../Models/Users');
 const Answer = require('../Models/Answer');
+const Ticket = require('../Models/Ticket');
 
 
 
