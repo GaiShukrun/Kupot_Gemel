@@ -518,7 +518,7 @@ app.put('/api/tickets/:id', authenticateToken, async (req, res) => {
   }
 
   const { id } = req.params;
-  const { response, status } = req.body;
+  const { response , status } = req.body;
 
   try {
       const ticket = await Ticket.findById(id);
@@ -526,8 +526,8 @@ app.put('/api/tickets/:id', authenticateToken, async (req, res) => {
           return res.status(404).json({ msg: 'Ticket not found' });
       }
 
-      ticket.response = response;
-      ticket.status = status || ticket.status; // Update status if provided, otherwise keep current status
+      ticket.response = response || ticket.response;
+      ticket.status = status || ticket.status; 
       await ticket.save();
 
       res.json(ticket);
