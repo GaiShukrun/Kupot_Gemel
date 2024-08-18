@@ -17,9 +17,7 @@ const TicketSchema = new Schema({
   createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   createdAt: { type: Date, default: Date.now },
   response: { type: String },
-  
-  // Add the forwardToAdmin field
-  forwardToAdmin: { type: Boolean, default: false }  // New field to track forwarded tickets
+  forwardToAdmin: { type: Boolean, default: false } 
 });
 
 const Ticket = mongoose.model('Ticket', TicketSchema);

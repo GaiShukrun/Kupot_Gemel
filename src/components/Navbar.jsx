@@ -46,11 +46,6 @@ function Navbar() {
           </>
         ) : (
           <>
-            <li className="navbar-item">
-              <Link to="/favorite-funds" className={isActive('/favorite-funds') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
-                Favorite Funds
-              </Link>
-            </li>
             {userRole === 'admin' && (
               <li className="navbar-item">
                 <Link to="/admin" className={isActive('/admin') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
@@ -65,6 +60,13 @@ function Navbar() {
                 </Link>
               </li>
             )}
+            {userRole === 'user' && (
+              <>
+              <li className="navbar-item">
+              <Link to="/favorite-funds" className={isActive('/favorite-funds') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
+                Favorite Funds
+              </Link>
+            </li>
             <li className="navbar-item">
               <Link to="/questions-form" className={isActive('/questions-form') ? 'navbar-link navbar-link-active' : 'navbar-link'}>
                 Personal Questions
@@ -85,6 +87,8 @@ function Navbar() {
                 My Account
               </Link>
             </li>
+            </>
+            )}
             <li className="navbar-item">
               <button className="navbar-button" onClick={handleLogout}>Logout</button>
             </li>

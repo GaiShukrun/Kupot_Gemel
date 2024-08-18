@@ -41,17 +41,18 @@ function MyAccount() {
   const getBorderColor = (status) => {
     switch(status) {
       case 'Open':
-        return '#007bff';  
+        return '#007bff'; // Blue
       case 'In progress':
-        return '#ffc107';  
+        return '#ffc107'; // Yellow
       case 'Closed':
         return 'black';
       default:
-        return '#007bff';  
+        return '#007bff'; // Default to blue
     }
   };
 
 
+  // Sort tickets by status and then by created time
   const sortedTickets = tickets.sort((a, b) => {
     const statusOrder = ['Open', 'In progress', 'Closed'];
     if (statusOrder.indexOf(a.status) !== statusOrder.indexOf(b.status)) {
@@ -60,6 +61,7 @@ function MyAccount() {
     return new Date(b.createdAt) - new Date(a.createdAt);
   });
 
+  
   return (
     <div className="my-account">
       <h2>My Account</h2>

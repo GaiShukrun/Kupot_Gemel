@@ -20,10 +20,6 @@ th, td {
     background-color: #f9f9f9;
     color: #333;
     appearance: none; 
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%23333" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-    background-repeat: no-repeat;
-    background-position-x: 95%;
-    background-position-y: 50%;
     cursor: pointer;
     transition: all 0.3s ease;
 }

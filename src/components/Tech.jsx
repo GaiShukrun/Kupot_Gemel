@@ -151,7 +151,6 @@ const Tech = () => {
                             <th>Title</th>
                             <th>Description</th>
                             <th>Status</th>
-                            <th>Priority</th>
                             <th>Created By</th>
                             <th>Action</th>
                         </tr>
@@ -162,7 +161,6 @@ const Tech = () => {
                                 <td>{ticket.title}</td>
                                 <td>{ticket.description}</td>
                                 <td>
-                                    {ticket.status}
                                     <select
                                         value={status[ticket._id] || ticket.status}
                                         onChange={(e) => handleStatusChange(ticket._id, e.target.value)}
@@ -173,7 +171,6 @@ const Tech = () => {
                                         <option value="Closed">Closed</option>
                                     </select>
                                 </td>
-                                <td>{ticket.priority}</td>
                                 <td>{ticket.createdBy.username}</td>
                                 <td>
                                     <button 
