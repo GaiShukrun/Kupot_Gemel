@@ -536,4 +536,28 @@ app.put('/api/tickets/:id', authenticateToken, async (req, res) => {
   }
 });
 //////////////////////////////////////////////////////////////////////////////////////
-
+//////////////////////////////////////////////////////////////////////////////////////
+app.put('/api/tickets/:ticketId/forward', async (req, res) => {
+  const { ticketId } = req.params;
+  try {
+      const ticket = await Ticket.findById(ticketId);
+      if (!ticket) {
+          return res.status(404).send('Ticket not found');
+      }
+      ticket.forwardToAdmin = true;  // Mark ticket as forwarded
+      await ticket.save();
+      res.status(200).send('Ticket forwarded to admin');
+  } catch (error) {
+      res.status(500).send('Error forwarding ticket');
+  }
+});
+///////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
+app.get('/api/tickets/forwarded', async (req, res) => {
+  try {
+      const forwardedTickets = await Ticket.find({ forwardToAdmin: true }).populate('createdBy', 'username');
+      res.status(200).json(forwardedTickets);
+  } catch (error) {
+      res.status(500).send('Error fetching forwarded tickets');
+  }
+});

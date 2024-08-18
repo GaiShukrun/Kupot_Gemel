@@ -4,12 +4,15 @@ import './Admin.css';
 
 const Admin = () => {
     const [users, setUsers] = useState([]);
+    const [forwardedTickets, setForwardedTickets] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         fetchUsers();
+        fetchForwardedTickets(); 
     }, []);
 
+    // Fetch all users
     const fetchUsers = async () => {
         try {
             const response = await fetch('http://localhost:5000/api/users', {
@@ -30,11 +33,31 @@ const Admin = () => {
         }
     };
 
-    const handleDelete = async (userId) => {
-
+    // Fetch only forwarded tickets
+    const fetchForwardedTickets = async () => {
         try {
-            console.log(userId);
+            const response = await fetch('http://localhost:5000/api/tickets/forwarded', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Forwarded Tickets:', data);  // Debugging log
+                setForwardedTickets(data);  // Set the forwarded tickets
+            } else {
+                console.error('Error fetching forwarded tickets:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error fetching forwarded tickets:', error);
+        }
+    };
 
+    // Delete a user
+    const handleDelete = async (userId) => {
+        try {
             const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
@@ -43,7 +66,7 @@ const Admin = () => {
             });
 
             if (response.ok) {
-                fetchUsers();
+                fetchUsers();  // Refresh the users list after deletion
             } else {
                 console.error('Error deleting user:', response.statusText);
             }
@@ -51,15 +74,20 @@ const Admin = () => {
             console.error('Error deleting user:', error);
         }
     };
+
+    // Navigate to add user
     const handleAddUser = () => {
         navigate('/add-user');
     };
+
     return (
         <div>
             <div className="admin-header">
                 <h1>Admin Page</h1>
                 <button onClick={handleAddUser} className="add-user-btn">Add User</button>
             </div>
+
+            {/* Section for Users */}
             <h2>All Users</h2>
             {users.length > 0 ? (
                 <table>
@@ -80,7 +108,7 @@ const Admin = () => {
                                 <td>{user.lastname}</td>
                                 <td>{user.role}</td>
                                 <td>
-                                <button onClick={() => handleDelete(user._id)} className="delete-btn">Delete</button>
+                                    <button onClick={() => handleDelete(user._id)} className="delete-btn">Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -88,6 +116,35 @@ const Admin = () => {
                 </table>
             ) : (
                 <p>No users found</p>
+            )}
+
+            {/* Section for Forwarded Tickets */}
+            <h2>Forwarded Tickets</h2>
+            {forwardedTickets.length > 0 ? (
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Created By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {forwardedTickets.map((ticket) => (
+                            <tr key={ticket._id}>
+                                <td>{ticket.title}</td>
+                                <td>{ticket.description}</td>
+                                <td>{ticket.status}</td>
+                                <td>{ticket.priority}</td>
+                                <td>{ticket.createdBy.username}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p>No forwarded tickets found</p>
             )}
         </div>
     );
