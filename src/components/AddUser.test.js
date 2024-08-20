@@ -40,7 +40,7 @@ describe('AddUser Component', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Add User' }));
 
     await waitFor(() => {
-      expect(fetch).toHaveBeenCalledWith('http://localhost:5000/api/users/register', {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:5000/api/user/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

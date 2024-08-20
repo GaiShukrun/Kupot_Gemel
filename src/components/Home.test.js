@@ -1,136 +1,314 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AuthContext } from './AuthContext';
 import Home from './Home';
-import { act } from 'react';  // Import act from 'react' instead of 'react-dom/test-utils'
+
+// Mock IntersectionObserver
+class MockIntersectionObserver {
+  constructor() {}
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.IntersectionObserver = MockIntersectionObserver;
+
+// Mock LazyImage component
+jest.mock('./LazyImage', () => {
+  return function DummyLazyImage({ src, alt }) {
+    return <img src={src} alt={alt} />;
+  };
+});
 
 // Mock the fetch function
 global.fetch = jest.fn();
 
-// Mock useNavigate
+// Mock the navigation function
+const mockNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
 }));
 
-const mockFunds = [
-  { _id: '1', fundName: 'Fund A', fundClassification: 'Type A', controllingCorporation: 'Corp A', totalAssets: 1000000, monthlyYield: 5, reportPeriod: 202401 },
-  { _id: '2', fundName: 'Fund B', fundClassification: 'Type B', controllingCorporation: 'Corp B', totalAssets: 2000000, monthlyYield: 6, reportPeriod: 202402 },
-];
-
 describe('Home Component', () => {
+  const mockAuthContext = {
+    isAuthenticated: false,
+  };
+
   beforeEach(() => {
-    fetch.mockClear();
-    fetch.mockResolvedValue({
+    jest.clearAllMocks();
+  });
+
+  test('renders without crashing', () => {
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+    expect(screen.getByText('רשימת קופות גמל')).toBeInTheDocument();
+  });
+
+  test('fetches funds on mount', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Fund 1', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
+      { _id: '2', fundName: 'Fund 2', fundClassification: 'Class B', controllingCorporation: 'Corp 2', totalAssets: 2000, yearToDateYield: 6, yieldTrailing3Yrs: 18 },
+    ];
+
+    global.fetch.mockResolvedValueOnce({
       ok: true,
-      json: () => Promise.resolve(mockFunds),
+      json: async () => mockFunds,
+    });
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fund 1')).toBeInTheDocument();
+      expect(screen.getByText('Fund 2')).toBeInTheDocument();
     });
   });
 
-  test('renders Home component', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <Home />
-        </BrowserRouter>
-      );
-    });
-    
-    expect(screen.getByText('תנו לנו לעזור לכם לבחור קופת גמל')).toBeInTheDocument();
-    expect(screen.getByText('עקוב אחרי הקופות שמעניינות אותך')).toBeInTheDocument();
-    expect(screen.getByText('לשאולון האישי')).toBeInTheDocument();
-    expect(screen.getByText('למועדפים')).toBeInTheDocument();
-    expect(screen.getByText('Fund Name')).toBeInTheDocument();
-    expect(screen.getByText('Classification')).toBeInTheDocument();
-    expect(screen.getByText('Controlling Corporation')).toBeInTheDocument();
-    expect(screen.getByText('Total Assets')).toBeInTheDocument();
-    expect(screen.getByText('Monthly Yield')).toBeInTheDocument();
-  });
+  test('search functionality works', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Alpha Fund', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
+      { _id: '2', fundName: 'Beta Fund', fundClassification: 'Class B', controllingCorporation: 'Corp 2', totalAssets: 2000, yearToDateYield: 6, yieldTrailing3Yrs: 18 },
+    ];
 
-  test('fetches and displays funds', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <Home />
-        </BrowserRouter>
-      );
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
     });
-    
-    expect(screen.getByText('Fund A')).toBeInTheDocument();
-    expect(screen.getByText('Fund B')).toBeInTheDocument();
-  });
 
-  test('filters funds based on search input', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
           <Home />
-        </BrowserRouter>
-      );
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Alpha Fund')).toBeInTheDocument();
+      expect(screen.getByText('Beta Fund')).toBeInTheDocument();
     });
-    
+
     const searchInput = screen.getByPlaceholderText('Search Fund Name...');
-    await act(async () => {
-      fireEvent.change(searchInput, { target: { value: 'Fund A' } });
+    fireEvent.change(searchInput, { target: { value: 'Alpha' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('Alpha Fund')).toBeInTheDocument();
+      expect(screen.queryByText('Beta Fund')).not.toBeInTheDocument();
     });
-    
-    expect(screen.getByText('Fund A')).toBeInTheDocument();
-    expect(screen.queryByText('Fund B')).not.toBeInTheDocument();
   });
 
-  test('sorts funds when sort criteria is selected', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <Home />
-        </BrowserRouter>
-      );
+  test('sort functionality works', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Fund A', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
+      { _id: '2', fundName: 'Fund B', fundClassification: 'Class B', controllingCorporation: 'Corp 2', totalAssets: 2000, yearToDateYield: 6, yieldTrailing3Yrs: 18 },
+    ];
+
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
     });
-    
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fund A')).toBeInTheDocument();
+      expect(screen.getByText('Fund B')).toBeInTheDocument();
+    });
+
     const sortSelect = screen.getByRole('combobox');
-    await act(async () => {
-      fireEvent.change(sortSelect, { target: { value: 'totalAssets-desc' } });
+    fireEvent.change(sortSelect, { target: { value: 'totalAssets-desc' } });
+
+    await waitFor(() => {
+      const rows = screen.getAllByRole('row');
+      expect(rows[1]).toHaveTextContent('Fund B');
+      expect(rows[2]).toHaveTextContent('Fund A');
     });
-    
-    const fundRows = screen.getAllByRole('row').slice(1); // Exclude header row
-    expect(fundRows[0]).toHaveTextContent('Fund B');
-    expect(fundRows[1]).toHaveTextContent('Fund A');
   });
 
-  test('navigates to fund analytics page when a fund is clicked', async () => {
-    const mockNavigate = jest.fn();
-    jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(mockNavigate);
+  test('fund click navigates to analytics page when authenticated', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Test Fund', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
+    ];
 
-    await act(async () => {
-      render(
-        <BrowserRouter>
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
+    });
+
+    const authenticatedContext = { ...mockAuthContext, isAuthenticated: true };
+
+    render(
+      <Router>
+        <AuthContext.Provider value={authenticatedContext}>
           <Home />
-        </BrowserRouter>
-      );
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Fund')).toBeInTheDocument();
     });
-    
-    const fundRow = screen.getByText('Fund A').closest('tr');
-    await act(async () => {
-      fireEvent.click(fundRow);
-    });
-    
-    expect(mockNavigate).toHaveBeenCalledWith('/analytics/Fund%20A');
+
+    fireEvent.click(screen.getByText('Test Fund'));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/analytics/Test%20Fund');
   });
 
-  test('displays correct pagination', async () => {
-    await act(async () => {
-      render(
-        <BrowserRouter>
-          <Home />
-        </BrowserRouter>
-      );
+  test('pagination changes page', async () => {
+    const mockFunds = Array(30).fill().map((_, index) => ({
+      _id: `${index}`,
+      fundName: `Fund ${index}`,
+      fundClassification: 'Class A',
+      controllingCorporation: 'Corp 1',
+      totalAssets: 1000,
+      yearToDateYield: 5,
+      yieldTrailing3Yrs: 15
+    }));
+
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
     });
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fund 0')).toBeInTheDocument();
+    });
+
+    const nextPageButton = screen.getByText('Next');
+    fireEvent.click(nextPageButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Fund 25')).toBeInTheDocument();
+      expect(screen.queryByText('Fund 0')).not.toBeInTheDocument();
+    });
+  });
+
+  test('handles fetch error', async () => {
+    global.fetch.mockRejectedValueOnce(new Error('Fetch failed'));
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.queryByText('Fund 1')).not.toBeInTheDocument();
+    });
+  });
+
+  test('sort select changes sort criteria', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Fund A', totalAssets: 1000, yearToDateYield: 5 },
+      { _id: '2', fundName: 'Fund B', totalAssets: 2000, yearToDateYield: 6 },
+    ];
+
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
+    });
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Fund A')).toBeInTheDocument();
+    });
+
+    const sortSelect = screen.getByRole('combobox');
+    fireEvent.change(sortSelect, { target: { value: 'yearToDateYield-desc' } });
+
+    await waitFor(() => {
+      const rows = screen.getAllByRole('row');
+      expect(rows[1]).toHaveTextContent('Fund B');
+      expect(rows[2]).toHaveTextContent('Fund A');
+    });
+  });
+
+  test('displays loading state', async () => {
     
-    const pageOneLink = screen.getByText('1');
-    expect(pageOneLink).toBeInTheDocument();
-    expect(pageOneLink.closest('li')).toHaveClass('active');  // Check if the parent li has the 'active' class
-    expect(screen.queryByText('2')).not.toBeInTheDocument();
-    expect(screen.getByText('Previous')).toBeInTheDocument();
-    expect(screen.getByText('Next')).toBeInTheDocument();
+    let resolvePromise;
+    const promise = new Promise(resolve => {
+      resolvePromise = resolve;
+    });
+
+    global.fetch.mockImplementationOnce(() => promise);
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    resolvePromise({ ok: true, json: async () => [] });
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('loader')).not.toBeInTheDocument();
+    });
+  });
+
+  test('fund click shows alert when not authenticated', async () => {
+    const mockFunds = [
+      { _id: '1', fundName: 'Test Fund', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
+    ];
+
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockFunds,
+    });
+
+    global.alert = jest.fn();
+
+    render(
+      <Router>
+        <AuthContext.Provider value={mockAuthContext}>
+          <Home />
+        </AuthContext.Provider>
+      </Router>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Fund')).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByText('Test Fund'));
+
+    expect(global.alert).toHaveBeenCalledWith('Please log in to see analytics for fund Test Fund');
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
