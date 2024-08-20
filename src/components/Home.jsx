@@ -80,6 +80,18 @@ function Home() {
     }
     navigate(`/analytics/${encodeURIComponent(fundName)}`);
   };
+
+  const handleFeaturesButtonClick = (buttonName) => {
+    if (!isAuthenticated) {
+        alert('Please log in to see the ' + `${buttonName}`);
+      return;
+    }
+    if (buttonName == "questionnaire")
+      navigate(`/questions-form`);
+    else if (buttonName == "favorite funds")
+      navigate(`/favorite-funds`);
+  };
+  
   const handleSearch = (criteria, value) => {
     setSearchTerms(prev => ({...prev, [criteria]: value}));
     setCurrentPage(1);
@@ -164,7 +176,7 @@ function Home() {
                   בהתבסס על הצרכים וההעדפות האישיים שלכם.
                   מלאו את השאלון וקבלו את הבחירה המושלמת לחיסכון העתידי שלכם 
               </p>
-              <a href="/questions-form" class="features-button">לשאולון האישי</a>
+              <a class="features-button" onClick={() => handleFeaturesButtonClick("questionnaire")} >לשאלון האישי</a>
             </div>  
           </div>
         </section>
@@ -180,7 +192,7 @@ function Home() {
               כך תוכלו לנהל את החיסכון שלכם בצורה חכמה יותר,
               ולעקוב אחרי כל שינוי שיכול להשפיע על העתיד הכלכלי שלכם
               </p>
-              <a href="/favorite-funds" class="features-button">למועדפים</a>
+              <a class="features-button" onClick={() => handleFeaturesButtonClick("favorite funds")} >למועדפים</a>
             </div>  
             <div class="features-image">
               <LazyImage

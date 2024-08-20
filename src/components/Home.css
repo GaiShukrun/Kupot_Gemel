@@ -357,6 +357,7 @@ body {
   text-decoration: none;
   border-radius: 12px;
   font-size: 1.25em;
+  cursor: pointer;
 }
 
 .features-image {
