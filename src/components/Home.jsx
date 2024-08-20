@@ -94,7 +94,7 @@ function Home() {
   
   const filteredFunds = funds.filter((fund) => {
     return Object.entries(searchTerms).every(([criteria, term]) => {
-      if (criteria === 'totalAssets' || criteria === 'monthlyYield') {
+      if (criteria === 'totalAssets' || criteria === 'yearToDateYield') {
         return String(fund[criteria]).includes(term);
       }
       return fund[criteria].toLowerCase().includes(term.toLowerCase());
@@ -220,13 +220,13 @@ function Home() {
           <option value="">Add Sort Criteria</option>
           <option value="totalAssets-asc">Total Assets (Ascending)</option>
           <option value="totalAssets-desc">Total Assets (Descending)</option>
-          <option value="monthlyYield-asc">Monthly Yield (Ascending)</option>
-          <option value="monthlyYield-desc">Monthly Yield (Descending)</option>
+          <option value="yearToDateYield-asc">Year To Date Yield (Ascending)</option>
+          <option value="yearToDateYield-desc">Year To Date Yield (Descending)</option>
         </select>
         <div className="sort-items">
           {sortCriteria.map(({ criteria, order }, index) => (
             <div key={index} className="sort-item">
-               <span>{criteria === 'totalAssets' ? 'Total Assets' : 'Monthly Yield'} - {order === 'asc' ? 'Ascending' : 'Descending'}</span>
+               <span>{criteria === 'totalAssets' ? 'Total Assets' : 'Year To Date Yield'} - {order === 'asc' ? 'Ascending' : 'Descending'}</span>
                <button onClick={() => setSortCriteria(prev => prev.filter((_, i) => i !== index))}>×</button>
             </div>
           ))}
