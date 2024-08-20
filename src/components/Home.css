@@ -200,7 +200,7 @@ body {
 }
 
 .sort-container select {
-  width: 200px;
+  text-align: center;
   padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #dfe1e5;
@@ -210,34 +210,6 @@ body {
   cursor: pointer;
 }
 
-.sort-items {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.sort-item {
-  display: flex;
-  align-items: center;
-  background-color: #e8f0fe;
-  border: 1px solid #4285f4;
-  border-radius: 20px;
-  padding: 5px 10px;
-  margin: 5px;
-  font-size: 14px;
-}
-
-.sort-item button {
-  background-color: transparent;
-  border: none;
-  color: #d93025;
-  cursor: pointer;
-  font-weight: bold;
-  margin-left: 10px;
-  padding: 2px 5px;
-  transition: background-color 0.3s;
-}
 
 .funds-table tbody tr:nth-child(even) {
   background-color: #e6f2ff; /* Light blue */

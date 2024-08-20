@@ -87,7 +87,7 @@ function Home() {
   const handleAddSortCriteria = (e) => {
     const [criteria, order] = e.target.value.split('-');
     if (criteria && order) {
-      setSortCriteria(prev => [...prev, { criteria, order }]);
+      setSortCriteria([{criteria,order}]);
     }
   };
 
@@ -223,14 +223,6 @@ function Home() {
           <option value="yearToDateYield-asc">Year To Date Yield (Ascending)</option>
           <option value="yearToDateYield-desc">Year To Date Yield (Descending)</option>
         </select>
-        <div className="sort-items">
-          {sortCriteria.map(({ criteria, order }, index) => (
-            <div key={index} className="sort-item">
-               <span>{criteria === 'totalAssets' ? 'Total Assets' : 'Year To Date Yield'} - {order === 'asc' ? 'Ascending' : 'Descending'}</span>
-               <button onClick={() => setSortCriteria(prev => prev.filter((_, i) => i !== index))}>×</button>
-            </div>
-          ))}
-          </div>
         </div>
 
         {loadingFunds ? (

@@ -127,7 +127,6 @@ const Admin = () => {
                             <th>Title</th>
                             <th>Description</th>
                             <th>Status</th>
-                            <th>Priority</th>
                             <th>Created By</th>
                         </tr>
                     </thead>
@@ -137,7 +136,6 @@ const Admin = () => {
                                 <td>{ticket.title}</td>
                                 <td>{ticket.description}</td>
                                 <td>{ticket.status}</td>
-                                <td>{ticket.priority}</td>
                                 <td>{ticket.createdBy.username}</td>
                             </tr>
                         ))}
