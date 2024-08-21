@@ -65,4 +65,5 @@ npm start
 
 ```
 cd moongodb
+npm start
 ```
