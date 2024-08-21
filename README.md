@@ -10,8 +10,6 @@ Additionally the system features a comprehensive inquiry module that allows user
 
 <p align="center"><img src="https://img.shields.io/badge/Developed%20By%3A-Furman%20Vlad%20Shukrum%20Gai%20Berko%20Tal%20Hazan%20Ori-red" alt="shields"></p>
 
-<br />
-
 <h2>🚀 Demo</h2>
 
 [hayat-gemel.netlify.app](hayat-gemel.netlify.app)
@@ -19,13 +17,13 @@ Additionally the system features a comprehensive inquiry module that allows user
 <br />
 
 <h2>Project Screenshots:</h2>
+<br />
+<img src="https://github.com/GaiShukrun/Kupot_Gemel/blob/main/public/images/Questionnaire-md.png?raw=true" alt="project-screenshot">
+<img src="https://github.com/GaiShukrun/Kupot_Gemel/blob/main/public/images/Analytics-md.png?raw=true" alt="project-screenshot"">
 
-<img src="https://github.com/GaiShukrun/Kupot_Gemel/blob/main/public/images/Questionnaire-md .png?raw=true" alt="project-screenshot" width="600" height="400/">
-<img src="https://github.com/GaiShukrun/Kupot_Gemel/blob/main/public/images/Analytics-md.png?raw=true" alt="project-screenshot" width="600" height="400/">
+<br />
 
-<br /><br />
-
-<h2>🧐 Features</h2>
+<h2>✨ Features</h2>
 
 *Here are some of the project's best features:*
 
@@ -36,10 +34,9 @@ Additionally the system features a comprehensive inquiry module that allows user
 *   **Admin and Tech Support:** Develop administrative and technical support functionality to manage the application and users.
 *   **User Authentication:** Implement user registration and login system to secure access to the application.
 
-<br /><br />
+<br />
 
 <h2>🛠️ Installation Steps:</h2>
-<br />
 <p>1. Clone the repository:</p>
 
 ```
