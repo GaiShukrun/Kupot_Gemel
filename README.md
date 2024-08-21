@@ -12,7 +12,7 @@ Additionally the system features a comprehensive inquiry module that allows user
 
 <h2>🚀 Demo</h2>
 
-[hayat-gemel.netlify.app](hayat-gemel.netlify.app)
+[hayat-gemel.netlify.app](https://hayat-gemel.netlify.app/)
 
 <br />
 
