@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'
 import './Navbar.css';
 
 function Navbar() {
@@ -11,13 +12,33 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await logout();
-      alert('Logout successful');
-      navigate('/');
-      navigate(0); // refresh
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You are about to log out.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, log me out!"
+      });
+  
+      if (result.isConfirmed) {
+        await logout();
+        await Swal.fire({
+          title: "Logged Out!",
+          text: "You have been successfully logged out.",
+          icon: "success"
+        });
+        navigate('/');
+        navigate(0); // refresh
+      }
     } catch (error) {
       console.error('Logout error:', error);
-      alert('Logout failed');
+      Swal.fire({
+        title: "Error",
+        text: "Logout failed",
+        icon: "error"
+      });
     }
   };
 

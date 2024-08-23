@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import Loader from './Loader';
 import './RecommendedFunds.css';
 
 
@@ -47,7 +48,11 @@ function RecommendedFunds() {
 
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loader-container">
+          <Loader />
+      </div>
+  );
   }
 
 

@@ -6,6 +6,7 @@ import CustomTooltip from './Tooltip';
 import { AuthContext } from './AuthContext';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Swal from 'sweetalert2';
 
 function FundAnalytics() {
 
@@ -38,7 +39,12 @@ function FundAnalytics() {
 
   const addToFavorites = async () => {
     if (!isAuthenticated) {
-      alert('Please log in to add favorites');
+      Swal.fire({
+      title: 'Authentication Required',
+      text: 'Please log in to add favorites',
+      icon: 'warning',
+      confirmButtonColor: '#3085d6',
+    });
       return;
     }
     const token = localStorage.getItem('token');
@@ -76,14 +82,27 @@ function FundAnalytics() {
         setIsFavorite(true);
         setIsJittering(true);
         setTimeout(() => setIsJittering(false), 1000);
-        alert('Fund added to favorites!');
+        Swal.fire({
+          title: 'Fund added to favorites!',
+          icon: 'success',
+          confirmButtonColor: '#3085d6',
+        });
       } else {
         const errorData = await response.json();
-        alert(`Failed to add fund to favorites: ${errorData.message}`);
+        Swal.fire({
+          title: errorData.message,
+          icon: 'error',
+          confirmButtonColor: '#3085d6',
+        });
       }
     } catch (error) {
       console.error('Error adding to favorites:', error);
-      alert('An error occurred while adding to favorites');
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred while adding to favorites',
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+      });
     }
   };
 

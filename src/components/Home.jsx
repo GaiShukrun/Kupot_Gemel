@@ -7,6 +7,7 @@ import ScrollButton from './ScrollButton'; // Adjust the import path as necessar
 import { AuthContext } from './AuthContext';
 import Loader from './Loader'
 import LazyImage from './LazyImage';
+import Swal from 'sweetalert2';
 
 
 function Home() {
@@ -75,7 +76,12 @@ function Home() {
 
   const handleFundClick = (fundName) => {
     if (!isAuthenticated) {
-      alert('Please log in to see analytics for fund '+ fundName);
+      Swal.fire({
+        title: 'Please log in to see analytics for fund ' + fundName,
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
       return;
     }
     navigate(`/analytics/${encodeURIComponent(fundName)}`);
@@ -83,7 +89,12 @@ function Home() {
 
   const handleFeaturesButtonClick = (buttonName) => {
     if (!isAuthenticated) {
-        alert('Please log in to see the ' + `${buttonName}`);
+      Swal.fire({
+        title: `Please log in to see the ${buttonName}`,
+        icon: 'warning',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+      });
       return;
     }
     if (buttonName == "questionnaire")

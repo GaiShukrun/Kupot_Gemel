@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
+import Swal from 'sweetalert2'
 import './Login.css';
 
 function Login() {
@@ -29,7 +30,12 @@ function Login() {
             if (response.ok) {
                 const data = await response.json();
                 login(data.token, data.user.role, data.user.firstname, data.user.lastname, data.user.userId);
-                //login(data.token, data.user.role,data.user.userId);
+                await Swal.fire({
+                    title: 'LOGIN SUCCESSFUL',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                })
                 if (data.user.role === 'admin') {
                     navigate('/admin');
                 } else {
@@ -37,11 +43,19 @@ function Login() {
                 }
             } else {
                 const errorData = await response.json();
-                alert(`Error logging in: ${errorData.message}`);
+                await Swal.fire({
+                    title: 'LOGIN ERROR',
+                    icon: 'error',
+                    text: errorData.message
+                })
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('An error occurred while logging in');
+            await Swal.fire({
+                title: 'LOGIN ERROR',
+                icon: 'error',
+                text: "An error occurred while logging in"
+            })
         }
     };
 

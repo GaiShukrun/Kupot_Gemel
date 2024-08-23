@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from 'sweetalert2'
 import './TickerForm.css';
 
 const TicketForm = ({userId,onTicketCreated }) => {
@@ -20,9 +21,13 @@ const TicketForm = ({userId,onTicketCreated }) => {
       if (!res.ok) {
         throw new Error('Failed to submit ticket');
       }
-
       const data = await res.json();
       console.log(data);
+      await Swal.fire({
+        title: "Ticket created!",
+        text: "You ticket has been created successfully",
+        icon: "success"
+      });
       onTicketCreated();
       // Redirect to ticket list or show success message
     } catch (err) {

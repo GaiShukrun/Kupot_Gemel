@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from './AuthContext';
 import TicketForm from './TicketForm';
+import Swal from 'sweetalert2';
 import './MyAccount.css';
 
 function MyAccount() {
@@ -30,7 +31,24 @@ function MyAccount() {
   };
 
   const toggleTicketForm = () => {
-    setShowTicketForm(!showTicketForm);
+    if (showTicketForm) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Any unsaved changes will be lost.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, cancel",
+        cancelButtonText: "No, keep editing"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setShowTicketForm(false);
+        }
+      });
+    } else {
+      setShowTicketForm(true);
+    }
   };
 
   const handleTicketCreated = () => {

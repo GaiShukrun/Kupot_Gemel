@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import './Register.css'; // Import your custom CSS for Register page styling
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export const validEmail = new RegExp(
     '^[a-zA-Z0-9._:$!%-]+@[a-zA-Z0-9.-]+.[a-zA-Z]$'
@@ -24,33 +25,62 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validEmail.test(username)) {
-            alert('Invalid email address');
-
+            Swal.fire({
+                title: 'Invalid Email',
+                text: 'Please enter a valid email address',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+            });
             setError('Invalid email address');
             return;
         }
-
+    
         if (!validPassword.test(password)) {
-            alert('Password must be at least 6 characters long and contain at least one letter and one number');
+            Swal.fire({
+                title: 'Invalid Password',
+                text: 'Password must be at least 6 characters long and contain at least one letter and one number',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+            });
             setError('Password must be at least 6 characters long and contain at least one letter and one number');
             return;
         }
-
-        //setError('');
+    
         console.log("before sending to the server");
-        const response = await fetch('http://localhost:5000/api/user/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-
-            body: JSON.stringify({ username, password, firstname, lastname, securityQuestion, securityAnswer, role })
-        });
-        if (response.ok) {
-            alert('User registered');
-            navigate('/login');
-        } else {
-            alert('Error registering user');
+        try {
+            const response = await fetch('http://localhost:5000/api/user/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, firstname, lastname, securityQuestion, securityAnswer, role })
+            });
+    
+            if (response.ok) {
+                await Swal.fire({
+                    title: 'Success!',
+                    text: 'User registered successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                });
+                navigate('/login');
+            } else {
+                const errorData = await response.json();
+                Swal.fire({
+                    title: 'Registration Error',
+                    text: errorData.message || 'Error registering user',
+                    icon: 'error',
+                    confirmButtonColor: '#3085d6',
+                });
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            Swal.fire({
+                title: 'Error',
+                text: 'An unexpected error occurred during registration',
+                icon: 'error',
+                confirmButtonColor: '#3085d6',
+            });
         }
     };
 

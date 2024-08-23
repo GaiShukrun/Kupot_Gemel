@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
 import './Questions_Form.css';
 
 const questions = [
@@ -275,7 +276,11 @@ const Questions_Form = () => {
 
 
     if (isLoading) {
-        return <div>Loading form...</div>;
+        return (
+            <div className="loader-container">
+                <Loader />
+            </div>
+        );
       }
 
 
