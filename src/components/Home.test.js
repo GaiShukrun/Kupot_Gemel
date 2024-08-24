@@ -3,6 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import Home from './Home';
+import Swal from 'sweetalert2';
+
+jest.mock('sweetalert2');
 
 // Mock IntersectionObserver
 class MockIntersectionObserver {
@@ -282,18 +285,19 @@ describe('Home Component', () => {
     });
   });
 
-  test('fund click shows alert when not authenticated', async () => {
+  test('fund click shows Swal alert when not authenticated', async () => {
     const mockFunds = [
       { _id: '1', fundName: 'Test Fund', fundClassification: 'Class A', controllingCorporation: 'Corp 1', totalAssets: 1000, yearToDateYield: 5, yieldTrailing3Yrs: 15 },
     ];
-
+  
     global.fetch.mockResolvedValueOnce({
       ok: true,
       json: async () => mockFunds,
     });
-
-    global.alert = jest.fn();
-
+  
+    // Mock Swal.fire to return a resolved promise
+    Swal.fire.mockResolvedValue({});
+  
     render(
       <Router>
         <AuthContext.Provider value={mockAuthContext}>
@@ -301,14 +305,16 @@ describe('Home Component', () => {
         </AuthContext.Provider>
       </Router>
     );
-
+  
     await waitFor(() => {
       expect(screen.getByText('Test Fund')).toBeInTheDocument();
     });
-
+  
     fireEvent.click(screen.getByText('Test Fund'));
-
-    expect(global.alert).toHaveBeenCalledWith('Please log in to see analytics for fund Test Fund');
+  
+    expect(Swal.fire).toHaveBeenCalled();
+    
     expect(mockNavigate).not.toHaveBeenCalled();
   });
+  
 });

@@ -5,6 +5,11 @@ import { AuthContext } from './AuthContext';
 import FundAnalytics from './FundAnalytics';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Swal from 'sweetalert2';
+
+jest.mock('sweetalert2', () => ({
+  fire: jest.fn(),
+}));
 
 // Mock the fetch function
 global.fetch = jest.fn();
@@ -80,24 +85,20 @@ describe('FundAnalytics Component', () => {
     html2canvas.mockClear();
   });
 
-  // Increase the timeout for this specific test
-  jest.setTimeout(10000);
-
   test('downloads PDF when clicking the download button', async () => {
     fetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockFundData),
     });
-  
+
     const mockElement = document.createElement('div');
     mockElement.className = 'fund-analytics';
     document.body.appendChild(mockElement);
-  
-    // Mock html2canvas to return an object with toDataURL method
+
     html2canvas.mockResolvedValueOnce({
       toDataURL: jest.fn().mockReturnValue('mock-data-url')
     });
-    
+
     const mockPdf = {
       addImage: jest.fn(),
       save: jest.fn(),
@@ -109,28 +110,92 @@ describe('FundAnalytics Component', () => {
       getImageProperties: jest.fn(() => ({ width: 500, height: 500 })),
     };
     jsPDF.mockReturnValueOnce(mockPdf);
-  
+
     renderWithRouter(<FundAnalytics />);
-  
-    // Wait for the component to finish loading and render the actual fund name
-    await waitFor(() => expect(screen.getByText("Test Fund")).toBeInTheDocument(), { timeout: 5000 })
-      .catch(error => {
-        console.error('Error while waiting for fund name:', error);
-        console.log('Current document body:', document.body.innerHTML);
-      });
-  
-    // Find and click the download button
+
+    await waitFor(() => expect(screen.getByText("Test Fund")).toBeInTheDocument(), { timeout: 5000 });
+
     const downloadButton = screen.getByRole('img', { name: 'Download PDF' });
     fireEvent.click(downloadButton);
-  
-    // Wait for all asynchronous operations to complete
+
     await waitFor(() => {
       expect(html2canvas).toHaveBeenCalledWith(expect.any(Element));
       expect(jsPDF).toHaveBeenCalled();
       expect(mockPdf.addImage).toHaveBeenCalled();
       expect(mockPdf.save).toHaveBeenCalledWith('Test Fund.pdf');
-    }, { timeout: 5000 });
-  
+    });
+
     document.body.removeChild(mockElement);
   });
+
+  test('adds fund to favorites when authenticated', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockFundData),
+    });
+
+    const mockResponse = {
+      ok: true,
+      json: () => Promise.resolve({}),
+    };
+    fetch.mockResolvedValueOnce(mockResponse);
+
+    renderWithRouter(<FundAnalytics />, { isAuthenticated: true });
+
+    await waitFor(() => expect(screen.getByText("Test Fund")).toBeInTheDocument());
+
+    const favoriteButton = screen.getByRole('img', { name: 'Add to favorites' });
+    fireEvent.click(favoriteButton);
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith('http://localhost:5000/api/users/addFavorite', expect.objectContaining({
+        method: 'POST',
+      }));
+    });
+  });
+
+  test('shows authentication alert when unauthenticated', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockFundData),
+    });
+
+    renderWithRouter(<FundAnalytics />, { isAuthenticated: false });
+
+    await waitFor(() => expect(screen.getByText("Test Fund")).toBeInTheDocument());
+
+    const favoriteButton = screen.getByRole('img', { name: 'Add to favorites' });
+    fireEvent.click(favoriteButton);
+
+    await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalled();
+    });
+  });
+
+  test('displays loading state when fetching data', () => {
+    fetch.mockReturnValueOnce(new Promise(() => {}));
+
+    renderWithRouter(<FundAnalytics />);
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  test('renders charts with mock data', async () => {
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockFundData),
+    });
+  
+    renderWithRouter(<FundAnalytics />);
+  
+    await waitFor(() => {
+      const lineCharts = screen.getAllByTestId('line-chart');
+      const barChart = screen.getByTestId('bar-chart');
+      const pieChart = screen.getByTestId('pie-chart');
+      expect(lineCharts.length).toBe(3);
+      expect(barChart).toBeInTheDocument();
+      expect(pieChart).toBeInTheDocument();
+    });
+  });
+  
 });

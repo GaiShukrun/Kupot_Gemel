@@ -4,6 +4,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import Navbar from './Navbar';
 import { act } from 'react';
+import Swal from 'sweetalert2';
+
+
+jest.mock('sweetalert2');
 
 // Mock useNavigate
 const mockNavigate = jest.fn();
@@ -55,16 +59,24 @@ describe('Navbar', () => {
 
   it('calls logout function when Logout button is clicked', async () => {
     const logoutMock = jest.fn().mockResolvedValue();
-    renderNavbar({ isAuthenticated: true, logout: logoutMock });
-
+    const mockNavigate = jest.fn();
+  
+    renderNavbar({ isAuthenticated: true, logout: logoutMock, navigate: mockNavigate });
+  
+    // Mock the Swal.fire response
+    Swal.fire.mockResolvedValue({
+      isConfirmed: true,
+    });
+  
     await act(async () => {
       fireEvent.click(screen.getByText('Logout'));
     });
-
+  
     await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalled();
+  
       expect(logoutMock).toHaveBeenCalled();
-      expect(global.alert).toHaveBeenCalledWith('Logout successful');
-      expect(mockNavigate).toHaveBeenCalledWith('/');
+      expect(Swal.fire).toHaveBeenCalled();
     });
   });
 

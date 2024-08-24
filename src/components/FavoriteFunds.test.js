@@ -3,6 +3,8 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 import FavoriteFunds from './FavoriteFunds';
+import Swal from 'sweetalert2';
+jest.mock('sweetalert2');
 
 // Mock the fetch function
 global.fetch = jest.fn();
@@ -73,21 +75,27 @@ describe('FavoriteFunds Component', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/analytics/Fund%20A');
   });
 
-  test('removes fund when remove button is clicked', async () => {
+  test('removes fund when remove button is clicked and confirmed', async () => {
+    Swal.fire.mockResolvedValue({ isConfirmed: true });
+  
     fetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockFavoriteFunds),
     }).mockResolvedValueOnce({
       ok: true,
     });
-
+  
     renderWithContext(<FavoriteFunds />);
-
+  
     await waitFor(() => {
       const removeButtons = screen.getAllByText('Remove');
       fireEvent.click(removeButtons[0]);
     });
-
+  
+    await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalled();
+    });
+  
     await waitFor(() => {
       expect(screen.queryByText('Fund A')).not.toBeInTheDocument();
       expect(screen.getByText('Fund B')).toBeInTheDocument();
@@ -109,24 +117,32 @@ describe('FavoriteFunds Component', () => {
 
   test('handles remove error', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    
+    Swal.fire.mockResolvedValue({ isConfirmed: true });
+  
     fetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(mockFavoriteFunds),
-    }).mockResolvedValueOnce({
-      ok: false,
-    });
-
+    }).mockRejectedValueOnce(new Error('Network error'));
+  
     renderWithContext(<FavoriteFunds />);
-
+  
     await waitFor(() => {
       const removeButtons = screen.getAllByText('Remove');
       fireEvent.click(removeButtons[0]);
     });
-
+  
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to remove fund from favorites');
+      expect(Swal.fire).toHaveBeenCalled();
     });
-
+  
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Error removing fund from favorites:',
+        expect.any(Error)
+      );
+    });
+  
     consoleSpy.mockRestore();
   });
 });

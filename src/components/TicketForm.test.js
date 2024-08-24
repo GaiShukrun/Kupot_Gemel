@@ -2,6 +2,11 @@ import React from 'react';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import TicketForm from './TicketForm';
+import Swal from 'sweetalert2';
+
+jest.mock('sweetalert2', () => ({
+  fire: jest.fn(),
+}));
 
 describe('TicketForm', () => {
   const mockOnTicketCreated = jest.fn();
@@ -12,6 +17,8 @@ describe('TicketForm', () => {
   });
 
   test('renders the form and submits a ticket', async () => {
+    const mockOnTicketCreated = jest.fn();
+
     render(<TicketForm userId="123" onTicketCreated={mockOnTicketCreated} />);
 
     // Check if input fields are rendered
@@ -55,12 +62,21 @@ describe('TicketForm', () => {
       }),
     });
 
+    // Ensure Swal.fire was called with the success message
+    await waitFor(() => {
+        expect(Swal.fire).toHaveBeenCalledWith({
+            title: "Ticket created!",
+            text: "You ticket has been created successfully",
+            icon: "success"
+        });
+    });
+
     // Check if onTicketCreated was called
     expect(mockOnTicketCreated).toHaveBeenCalledTimes(1);
 
     // Clean up the mock
     global.fetch.mockClear();
-  });
+});
 
   test('handles fetch error correctly', async () => {
     render(<TicketForm userId="123" onTicketCreated={mockOnTicketCreated} />);

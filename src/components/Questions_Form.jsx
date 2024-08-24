@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from './Loader';
+import Swal from 'sweetalert2';
 import './Questions_Form.css';
 
 const questions = [
@@ -311,38 +312,72 @@ const Questions_Form = () => {
             console.log('Response data:', responseData);
 
             if (response.ok) {
-                alert('Answers saved successfully');
-                navigate('/recommended-funds');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Answers saved successfully',
+                }).then(() => {
+                    navigate('/recommended-funds');
+                });
             } else {
-                alert(`Error saving answers: ${responseData.message}`);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: `Error saving answers: ${responseData.message}`,
+                });
             }
         } catch (error) {
             console.error('Error saving answers:', error);
-            alert('An error occurred while saving answers');
-        }
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while saving answers',
+            });        }
     };
 
     const handleDelete = async () => {
-        if (window.confirm('Are you sure you want to delete your answers?')) {
+        const confirmation = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'Do you really want to delete your answers?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, keep it',
+        });
+    
+        if (confirmation.isConfirmed) {
             try {
                 const response = await fetch(`http://localhost:5000/api/users/answers/${username}`, {
                     method: 'DELETE'
                 });
-
+    
                 const responseData = await response.json();
                 console.log('Response data:', responseData);
-
+    
                 if (response.ok) {
-                    alert('Answers deleted successfully');
-                    setAnswers({});
-                    setIsEditing(false);
-                    navigate('/');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted',
+                        text: 'Answers deleted successfully',
+                    }).then(() => {
+                        setAnswers({});
+                        setIsEditing(false);
+                        navigate('/');
+                    });
                 } else {
-                    alert(`Error deleting answers: ${responseData.message}`);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Error deleting answers: ${responseData.message}`,
+                    });
                 }
             } catch (error) {
                 console.error('Error deleting answers:', error);
-                alert('An error occurred while deleting answers');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while deleting answers',
+                });
             }
         }
     };

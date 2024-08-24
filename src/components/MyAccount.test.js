@@ -3,6 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import MyAccount from './MyAccount';
 import { AuthContext } from './AuthContext';
+import Swal from 'sweetalert2';
+
+jest.mock('sweetalert2');
 
 // Mock the AuthContext
 const mockAuthContext = {
@@ -65,21 +68,34 @@ describe('MyAccount Component', () => {
     });
   });
 
-  test('toggles ticket form visibility', () => {
+  test('toggles ticket form visibility', async () => {
+    // Mock Swal.fire to return a resolved promise
+    Swal.fire.mockResolvedValue({ isConfirmed: true });
+  
     render(
       <AuthContext.Provider value={mockAuthContext}>
         <MyAccount />
       </AuthContext.Provider>
     );
-
+  
     const toggleButton = screen.getByText('Create New Ticket');
+    
+    // Show the form
     fireEvent.click(toggleButton);
-
     expect(screen.getByTestId('ticket-form')).toBeInTheDocument();
-
+  
+    // Hide the form
     fireEvent.click(toggleButton);
-
-    expect(screen.queryByTestId('ticket-form')).not.toBeInTheDocument();
+    
+    // Wait for Swal to be called
+    await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalled();
+    });
+  
+    // Wait for the form to be removed from the document
+    await waitFor(() => {
+      expect(screen.queryByTestId('ticket-form')).not.toBeInTheDocument();
+    });
   });
 
   test('handles ticket creation', async () => {

@@ -124,4 +124,56 @@ describe('Admin Component', () => {
 
     expect(navigateMock).toHaveBeenCalledWith('/add-user');
   });
+
+  test('fetches and displays forwarded tickets', async () => {
+    const mockForwardedTickets = [
+        { _id: '1', title: 'Ticket 1', description: 'Description 1', status: 'Open', createdBy: { username: 'user1' } },
+        { _id: '2', title: 'Ticket 2', description: 'Description 2', status: 'Closed', createdBy: { username: 'user2' } },
+    ];
+
+    fetch
+        .mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockUsers,
+        })
+        .mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockForwardedTickets,
+        });
+
+    await act(async () => {
+        render(
+            <BrowserRouter>
+                <Admin />
+            </BrowserRouter>
+        );
+    });
+
+    expect(screen.getByText('Forwarded Tickets')).toBeInTheDocument();
+    expect(screen.getByText('Ticket 1')).toBeInTheDocument();
+    expect(screen.getByText('Ticket 2')).toBeInTheDocument();
+});
+
+test('displays "No forwarded tickets found" when there are no forwarded tickets', async () => {
+    fetch
+        .mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockUsers,
+        })
+        .mockResolvedValueOnce({
+            ok: true,
+            json: async () => [],
+        });
+
+    await act(async () => {
+        render(
+            <BrowserRouter>
+                <Admin />
+            </BrowserRouter>
+        );
+    });
+
+    expect(screen.getByText('No forwarded tickets found')).toBeInTheDocument();
+});
+
 });

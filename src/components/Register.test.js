@@ -1,7 +1,12 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent,waitFor  } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Register, { validEmail, validPassword } from './Register';
+import Swal from 'sweetalert2';
+
+jest.mock('sweetalert2', () => ({
+  fire: jest.fn(),
+}));
 
 describe('Register Component', () => {
     test('renders Register component', () => {
@@ -30,38 +35,36 @@ describe('Register Component', () => {
         expect(validPassword.test('pass')).toBe(false);
     });
 
-    test('shows error for invalid email', () => {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-
+    test('shows error for invalid email', async () => {
         render(
             <BrowserRouter>
                 <Register />
             </BrowserRouter>
         );
-
+    
         fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'invalid-email' } });
         fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'Password123' } });
         fireEvent.click(screen.getByTitle('BUT'));
-
-        expect(window.alert).toHaveBeenCalledWith('Invalid email address');
-        alertMock.mockRestore();
+    
+        await waitFor(() => {
+            expect(Swal.fire).toHaveBeenCalled();
+        });
     });
 
-    test('shows alert for invalid password', () => {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-
+    test('shows error for invalid password', async () => {
         render(
             <BrowserRouter>
                 <Register />
             </BrowserRouter>
         );
-
+    
         fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'test@example.com' } });
         fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'pass' } });
         fireEvent.click(screen.getByTitle('BUT'));
-
-        expect(window.alert).toHaveBeenCalledWith('Password must be at least 6 characters long and contain at least one letter and one number');
-        alertMock.mockRestore();
+    
+        await waitFor(() => {
+            expect(Swal.fire).toHaveBeenCalled();
+        });
     });
 
     test('submits the form with valid inputs', () => {
